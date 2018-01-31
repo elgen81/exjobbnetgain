@@ -1,0 +1,24 @@
+{
+  "name": "exjobbnetgain",
+  "version": "1.0.0",
+  "description": "Message queue management system",
+  "main": "index.js",
+  "dependencies": {
+    "mongodb": "^3.0.2",
+    "typescript": "^2.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "runtest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elgen81/exjobbnetgain.git"
+  },
+  "author": "Richard Lundh, Helge Fransson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elgen81/exjobbnetgain/issues"
+  },
+  "homepage": "https://github.com/elgen81/exjobbnetgain#readme"
+}
