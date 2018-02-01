@@ -1,0 +1,2 @@
+#!/bin/bash
+node menu.js $1 $2

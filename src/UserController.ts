@@ -12,6 +12,7 @@ import User = require("./User");
 console.log("in usercontroller");
 
 router.post('/', function(req, res){
+	res.send("Hello World");
 	User.create({
 		name: req.body.name,
 		email: req.body.email,
@@ -24,6 +25,7 @@ router.post('/', function(req, res){
 });
 
 router.get('/', function(req, res){
+	res.send("Hello World 2");
 	User.find({}, function(err, users){
 		if(err) {return res.status(500).send("There was a problem finding the users.");}
 		res.status(200).send(users);
