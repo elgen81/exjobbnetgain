@@ -1,2 +1,2 @@
 #!/bin/bash
-node menu.js $1 $2
+node ../dist/menu.js $1 $2
