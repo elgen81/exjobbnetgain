@@ -1,10 +1,11 @@
 //app.ts
 
+
 import * as express from "express";
-var app:express = express();
+var app = express();
 import * as db from "./db";
 
-import UserController = require("./UserController");
-app.use("/users", UserController);
+import InputController = require("./InputController");
+app.use("/input", InputController);
 
 export = app;
