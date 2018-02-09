@@ -1,9 +1,10 @@
 //app.ts
 
 
-import * as express from "express";
+import express = require("express");
 var app = express();
-import * as db from "./db";
+var db = require("./db");
+
 
 import InputController = require("./InputController");
 app.use("/input", InputController);

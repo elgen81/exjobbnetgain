@@ -4,8 +4,9 @@ import express = require("express");
 var router = express.Router();
 import bodyParser = require("body-parser");
 import mongoose = require("mongoose");
-import Msg = require("./models/msg")
+//import Msg = require("./models/msg")
 
+var Msg = mongoose.model("Msg");
 router.use(bodyParser.urlencoded({ extended: true }));
 //router.use(bodyParser.json());
 
@@ -24,20 +25,18 @@ router.post('/', function(req, res){
 	console.log(req.body.reciver);
 	console.log(req.body.msg);
 	console.log(msgIn);
-	msgIn.save(/*function(err, msg){*/)
-		res.send("hello wolrd!")
-		//if(err) {return res.status(500).send("There was a problem adding the information to the database.");}
-		//res.status(200).send(msg);
-	//});
+	msgIn.save(function(err, msg){
+		//res.send("hello wolrd!")
+		if(err) {return res.status(500).send("There was a problem adding the information to the database.");}
+		res.status(200).send(msg);
+	});
 });
 
 router.get('/', function(req, res){
-	var query = Msg.find()/*, function(err, msg){
+	Msg.find({}, function(err, msg){
 		if(err) {return res.status(500).send("There was a problem finding the users.");}
 		res.status(200).send(msg);
-	});*/
-	console.log(query.cast(Msg));
-	res.send(query.cast(Msg));
+	});
 });
 
 export = router;

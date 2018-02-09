@@ -12,6 +12,6 @@ var destinationListSchema: mongoose.Schema = new mongoose.Schema({
 	destination: String
 });
 
-var DestinationList = mongoose.model<IDestinaionList>("DestinationList", destinationListSchema);
+var DestinationList = mongoose.model<IDestinationListModel>("DestinationList", destinationListSchema);
 
-export = DestinaionList;
+export = DestinationList;
