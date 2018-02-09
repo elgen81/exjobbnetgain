@@ -1,4 +1,5 @@
 "use strict";
+//file.ts
 var fs_1 = require("fs");
 var file = /** @class */ (function () {
     function file() {
@@ -72,6 +73,24 @@ var file = /** @class */ (function () {
         else
             var final = 1;
         return final;
+    };
+    file.prototype.removeLine = function (filename, data) {
+        filename = filename + ".ini";
+        if (this.fileExists(filename)) {
+            if ((this.dataExists(filename, data))) {
+                var contents = fs_1.readFileSync("../dist/" + filename, 'utf8');
+                var first = contents.lastIndexOf(data);
+                var firstPart = contents.slice(0, first);
+                first = firstPart.lastIndexOf('#');
+                firstPart = firstPart.slice(0, first);
+                var last = contents.lastIndexOf(data);
+                var lastPart = contents.slice(last);
+                last = lastPart.indexOf('\n');
+                lastPart = lastPart.slice(last + 1);
+                var ny = firstPart + lastPart;
+                fs_1.writeFileSync("../dist/" + filename, ny, 'utf8');
+            }
+        }
     };
     return file;
 }());

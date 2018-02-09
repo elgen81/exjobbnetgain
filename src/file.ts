@@ -1,4 +1,5 @@
-import { readFileSync } from "fs";
+//file.ts
+import { readFileSync, writeFileSync, readFile } from "fs";
 import { create } from "domain";
 
 class file {
@@ -78,6 +79,24 @@ class file {
         else
             var final=1
             return final
+    }
+    removeLine(filename:string, data:string){
+        filename = filename+".ini"
+        if(this.fileExists(filename)){
+            if((this.dataExists(filename, data))){
+                var contents = readFileSync("../dist/"+filename, 'utf8')
+                var first = contents.lastIndexOf(data)
+                var firstPart = contents.slice(0,first)
+                first = firstPart.lastIndexOf('#')
+                firstPart = firstPart.slice(0,first)
+                var last = contents.lastIndexOf(data)
+                var lastPart = contents.slice(last)
+                last = lastPart.indexOf('\n')
+                lastPart = lastPart.slice(last+1)
+                var ny = firstPart+lastPart
+                writeFileSync("../dist/"+filename, ny, 'utf8')
+            }
+        }
     }
 }
 export = file

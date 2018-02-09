@@ -11,6 +11,7 @@ function whitelist(action:string, adress:string) {
     break
     case'remove':
         console.log("Remove "+adress+" from whitelist")
+        file.removeLine('whitelist',adress)
     break
     case'display':
         file.showFile('whitelist')
