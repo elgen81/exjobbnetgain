@@ -8,7 +8,7 @@ class file {
     constructor(){}
 
     showFile(filename:string){
-        this.fs.readFile("../dist/"+filename+".ini", function (err, data){
+        this.fs.readFile("./"+filename+".ini", function (err, data){
             if(err){
                 return console.log(filename+".ini is empty")
             }
@@ -20,7 +20,7 @@ class file {
         filename = filename+'.ini'
         if(this.fileExists(filename)){
             if(!(this.dataExists(filename, data))){
-                this.fs.appendFile("../dist/"+filename, '#'+(this.findLast(filename))+" "+data+"\n", function(err){
+                this.fs.appendFile("./"+filename, '#'+(this.findLast(filename))+" "+data+"\n", function(err){
                 if(err){
                     return console.log(err);
                 }
@@ -37,10 +37,10 @@ class file {
     }
     
     fileExists(filename:string){
-        var exists = this.fs.existsSync("../dist/"+filename)
+        var exists = this.fs.existsSync("./"+filename)
             if(!exists){
                 console.log(filename+" does not exist creating")
-                var res = this.createFile('../dist/'+filename)
+                var res = this.createFile('./'+filename)
                 if(!res){
                     return 0
                 }
@@ -58,7 +58,7 @@ class file {
     }
 
     dataExists(filename:string, data:string){
-        var contents = readFileSync("../dist/"+filename, 'utf8')
+        var contents = readFileSync("./"+filename, 'utf8')
         var exists = contents.lastIndexOf(data)
         if(exists == -1)
             return 0
@@ -66,7 +66,7 @@ class file {
             return 1  
     }
     findLast(filename:string):number{
-        var contents = readFileSync("../dist/"+filename, 'utf8')
+        var contents = readFileSync("./"+filename, 'utf8')
         var last = contents.lastIndexOf('#') 
         contents = contents.slice(last)
         if(last!=-1){
@@ -84,7 +84,7 @@ class file {
         filename = filename+".ini"
         if(this.fileExists(filename)){
             if((this.dataExists(filename, data))){
-                var contents = readFileSync("../dist/"+filename, 'utf8')
+                var contents = readFileSync("./"+filename, 'utf8')
                 var first = contents.lastIndexOf(data)
                 var firstPart = contents.slice(0,first)
                 first = firstPart.lastIndexOf('#')
@@ -94,7 +94,7 @@ class file {
                 last = lastPart.indexOf('\n')
                 lastPart = lastPart.slice(last+1)
                 var ny = firstPart+lastPart
-                writeFileSync("../dist/"+filename, ny, 'utf8')
+                writeFileSync("./"+filename, ny, 'utf8')
             }
         }
     }
