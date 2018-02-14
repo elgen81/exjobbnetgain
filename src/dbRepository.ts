@@ -10,7 +10,7 @@ export function destinationListSetup(){
 
 	for(let entery of whitelistAll){
 	  destinationList.count({queueID: entery[0]} && {destination: entery[1]}, function(err, count){
-	    if(count > 0)   //destinationListAll.where({ queueID: entery[0]} && {destination: entery[1]})
+	    if(count > 0)
 	    {
 	      destinationList.update({ queueID: entery[0]} && {destination: entery[1]}, {active: true});
 	      console.log(entery +" now active.");  
@@ -33,5 +33,40 @@ export function destinationListSetup(){
 	}
 
 	console.log(destinationList.find({}));
+}
+
+export function doesQueueExists(queueId:string):boolean{
+	return false;
+}
+
+
+export function startNewQueue():boolean{
+	return false;
+}
+//Push a new message onto the end of the message array in a queue document
+export function queuePush(queueId:string, msgId:string){
+	var Msg = mongoose.model("Msg");
+	var Queue = mongoose.model("QueueList");
+	var errReturn;
+	Msg.findById(msgId, function(err, msg){
+		Queue.update(
+			{ _id: queueId},
+			{ $push: {msgArray: msg} });
+		errReturn = err;
+	});
+	return errReturn;
+}
+
+//Retrieves the first element in the message array of a queue document
+export function queuePop(queueId:string){
+
+	var Queue = mongoose.model("QueueList");
+	var msgReturn;
+	Queue.update(
+		{ _id: queueId},
+		{ $pop: { msgArray: -1} }, function(err, msg){
+			msgReturn = msg;
+		});
+	return msgReturn;
 }
 
