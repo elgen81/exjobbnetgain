@@ -3,7 +3,7 @@ import File =  require("./file")
 
 var file = new File
 
-function whitelist(action:string, adress:string) {
+function whitelist(action:string, adress) {
     switch(action){
     case'add':
         console.log("Add "+adress+" to whitelist")
@@ -20,6 +20,15 @@ function whitelist(action:string, adress:string) {
     break
     case'display':
         file.showFile('whitelist')
+    break
+    case'tupleId':
+        file.getLineAsTupleById('whitelist', adress)
+    break
+    case'tupleName':
+        file.getLineAsTupleByName('whitelist', adress)
+    break
+    case'tupleAll':
+        file.getAllLinesAsTuple('whitelist')
     break
     }
 }

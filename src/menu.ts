@@ -35,6 +35,30 @@ break
 case'shutdown':
 console.log("Saving queues and turning of system")
 break
+case'tupleId': 
+if(process.argv.length>3){
+    whitelist("tupleId",process.argv[3])
+}
+else{
+    console.log("please provide an id for the tuple to be viewed")
+}
+break
+case'tupleName':
+if(process.argv.length>3){
+    whitelist("tupleName",process.argv[3])
+}
+else{
+    console.log("please provide an adress for the tuple to be viewed")
+}
+break
+case'tupleAll':
+if(process.argv.length>3){
+    whitelist("tupleAll",process.argv[3])
+}
+else{
+    console.log("please provide an adress for the adress to be removed")
+}
+break
 default:    
 console.log("Usage: node menu.js [options] [arguments]")
 console.log("")

@@ -57,7 +57,7 @@ class file {
         return 1
     }
 
-    dataExists(filename:string, data:string){
+    dataExists(filename:string, data){
         var contents = readFileSync("./"+filename, 'utf8')
         var exists = contents.lastIndexOf(data)
         if(exists == -1)
@@ -97,6 +97,69 @@ class file {
                 writeFileSync("./"+filename, ny, 'utf8')
             }
         }
+    }
+    getLineAsTupleById(filename:string, data:number){
+        filename = filename+".ini"
+        var ndata = "#"+data
+        if(this.fileExists(filename)){
+            if((this.dataExists(filename, ndata))){
+                var contents = readFileSync("./"+filename, 'utf8')
+                var first = contents.indexOf(ndata)
+                var firstPart = contents.slice(first+1)
+                first = firstPart.indexOf(' ')
+                var id = firstPart.slice(0,first)
+                firstPart = firstPart.slice(first+1)
+                first = firstPart.indexOf('\n')
+                var adress = firstPart.slice(0,first)
+                var tuple = [+id,adress]
+                console.log(tuple)
+                return tuple
+            }
+        }
+    }
+    getLineAsTupleByName(filename:string, data:string){
+        filename = filename+".ini"
+        if(this.fileExists(filename)){
+            if((this.dataExists(filename, data))){
+                var contents = readFileSync("./"+filename, 'utf8')
+                var first = contents.indexOf(data)
+                var id = contents.slice(0,first)
+                first = id.lastIndexOf('#')
+                var first2 = id.lastIndexOf(" ")
+                id = id.slice(first+1,first2)
+                var last = contents.lastIndexOf(data)
+                var adress = contents.slice(last)
+                var last2 = adress.indexOf("\n")
+                adress = adress.slice(0,last2)
+                var tuple = [+id,adress]
+                console.log(tuple)
+                return tuple
+            }
+        }
+    }
+    getAllLinesAsTuple(filename){
+        filename = filename+".ini"
+        if(this.fileExists(filename)){
+            var contents = readFileSync("./"+filename, 'utf8')
+                var isNumber:number = contents.lastIndexOf("#")
+                if(isNumber !=-1){
+                    var nytt = contents.replace(/\n/g, ",")
+                    nytt = nytt.replace(/#/g,"")
+                    nytt = nytt.replace(/ /g, ",")
+                    var last = nytt.lastIndexOf(",")
+                    nytt = nytt.slice(0,last)
+                    console.log(nytt)
+                    return [nytt]
+            }
+            else{
+                console.log(filename+" is empty")
+                return []
+            }
+        }
+        else{
+            console.log("File is empty")
+            return []
+        }    
     }
 }
 export = file
