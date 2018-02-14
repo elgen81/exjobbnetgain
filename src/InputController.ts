@@ -4,7 +4,7 @@ import express = require("express");
 var router = express.Router();
 import bodyParser = require("body-parser");
 import mongoose = require("mongoose");
-//import Msg = require("./models/msg")
+import sorter = require("./sorter");
 
 var Msg = mongoose.model("Msg");
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -12,14 +12,12 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 router.post('/', function(req, res){
 	
-	/*var msg:string = req.body.reciver + req.body.msg;
-	console.log(msg);
-	console.log(req.body.reciver);
-	console.log(req.body.msg);
-	res.status(200).send(msg);*/
 	var msgIn = new Msg({
 		sender: req.connection.remoteAddress,
 		reciver: req.body.reciver,
+		timeRecived: Date.now,
+		isSorted: false,
+		isSent: false,
 		msg: req.body.msg
 	});
 	console.log(req.body.reciver);
@@ -27,8 +25,13 @@ router.post('/', function(req, res){
 	console.log(msgIn);
 	msgIn.save(function(err, msg){
 		//res.send("hello wolrd!")
-		if(err) {return res.status(500).send("There was a problem adding the information to the database.");}
-		res.status(200).send(msg);
+		if(err) 
+			{return res.status(500).send("There was a problem adding the information to the database.");}
+		else
+		{
+			sorter.sortElem(msg._id);
+			res.status(200).send("Information added to the database.");
+		}
 	});
 });
 

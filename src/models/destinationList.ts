@@ -7,11 +7,12 @@ interface IDestinationListModel extends IDestinationList, mongoose.Document{
 	//Place for custom methods
 }
 
-var destinationListSchema: mongoose.Schema = new mongoose.Schema({
+export var destinationListSchema: mongoose.Schema = new mongoose.Schema({
 	queueID: Number,
-	destination: String
+	destination: String,
+	active: Boolean
 });
 
-var DestinationList = mongoose.model<IDestinationListModel>("DestinationList", destinationListSchema);
+export var DestinationList = mongoose.model<IDestinationListModel>("DestinationList", destinationListSchema);
 
-export = DestinationList;
+//export = DestinationList;

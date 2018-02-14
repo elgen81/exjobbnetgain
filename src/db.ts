@@ -1,6 +1,7 @@
 //db.ts
 
 import * as mongoose from "mongoose";
+import * as repo from "./dbRepository";
 
 //DATABASE CONNECTION
 var uri:string = "mongodb://127.0.0.1/my_db";
@@ -39,7 +40,10 @@ process.on('SIGINT', function() {
   }); 
 });
 
-
+//Init database models
 require("./models/destinationList");
 require("./models/msg");
 require("./models/queueList");
+
+//Instantiate DestinationList collection to represent whitelist.ini
+repo.destinationListSetup();
