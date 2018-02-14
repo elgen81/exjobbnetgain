@@ -1,1 +1,2 @@
-/dist/whitelist.ini
+node_modules/**
+node_modules/**/
