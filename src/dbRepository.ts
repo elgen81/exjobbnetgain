@@ -32,7 +32,7 @@ export function destinationListSetup(){
 	  });
 	}
 
-	console.log(destinationList.find({}));
+	//console.log(destinationList.find({}));
 }
 
 export function doesQueueExists(queueId:string):boolean{
@@ -50,8 +50,11 @@ export function queuePush(queueId:string, msgId:string){
 	var errReturn;
 	Msg.findById(msgId, function(err, msg){
 		Queue.update(
-			{ _id: queueId},
+			{ queueID: queueId },
 			{ $push: {msgArray: msg} });
+		Queue.update(
+			{ queueID: queueId },
+			{ $inc: { lengthOfQueue: 1} });
 		errReturn = err;
 	});
 	return errReturn;
@@ -63,10 +66,13 @@ export function queuePop(queueId:string){
 	var Queue = mongoose.model("QueueList");
 	var msgReturn;
 	Queue.update(
-		{ _id: queueId},
+		{ queueID: queueId},
 		{ $pop: { msgArray: -1} }, function(err, msg){
 			msgReturn = msg;
 		});
+	Queue.update(
+			{ queueID: queueId },
+			{ $inc: { lengthOfQueue: -1} });
 	return msgReturn;
 }
 
