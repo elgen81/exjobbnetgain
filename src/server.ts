@@ -1,6 +1,6 @@
 //server.ts
 
-import * as app from "./app";
+import app = require("./app");
 var port:number = 3000;
 
 var server = app.listen(port, function(){

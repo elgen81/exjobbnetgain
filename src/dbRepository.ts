@@ -1,37 +1,39 @@
 import mongoose = require("mongoose");
+import file = require("./file");
 
 
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(){
+	var File:file = new file();
 	var destinationList = mongoose.model("DestinationList");
-	var whitelistAll:Array<[number, string]> = [[2, "hej"], [3, "då"], [5, "sometahing"]]//=whitelist.getAll();
+	var whitelistAll:Array<[number, string]> = File.getAllLinesAsTuple("whitelist"); //[[2, "hej"], [3, "då"], [5, "sometahing"]]
 	destinationList.update({}, {active: false})
 	var destinationListAll = destinationList.find({});
 
-	for(let entery of whitelistAll){
-	  destinationList.count({queueID: entery[0]} && {destination: entery[1]}, function(err, count){
+	for(let entry of whitelistAll){
+	  destinationList.count({queueID: entry[0]} && {destination: entry[1]}, function(err, count){
 	    if(count > 0)
 	    {
-	      destinationList.update({ queueID: entery[0]} && {destination: entery[1]}, {active: true});
-	      console.log(entery +" now active.");  
+	      destinationList.update({ queueID: entry[0]} && {destination: entry[1]}, {active: true});
+	      console.log(entry +" now active.");  
 	    }
 	    else
 	    {
 	      var newDestination = new destinationList({
-	        queueID: entery[0],
-	        destination: entery[1],
+	        queueID: entry[0],
+	        destination: entry[1],
 	        active: true
 	      });
 	      newDestination.save(function(err){
 	      if(err)
 	        { console.log("Error adding new destination."); }
 	      else
-	        { console.log("New destination added: " + entery[0].toString +" "+ entery[1]); }
+	        { console.log("New destination added: " + entry[0].toString +" "+ entry[1]); }
 	      });
 	    }
 	  });
 	}
-
+	//return true;
 	//console.log(destinationList.find({}));
 }
 

@@ -1,7 +1,7 @@
 //db.ts
 
 import * as mongoose from "mongoose";
-import * as repo from "./dbRepository";
+import repo = require("./dbRepository");
 
 //DATABASE CONNECTION
 var uri:string = "mongodb://127.0.0.1/my_db";
