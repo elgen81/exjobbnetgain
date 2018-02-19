@@ -1,5 +1,8 @@
 //menu.ts        
 import whitelist = require('./whitelist')
+import mongoose = require("mongoose");
+require("./db")
+
 switch(process.argv[2]){
 case'addWhite':
     if(process.argv.length>3){
@@ -21,7 +24,14 @@ case'remWhite':
     }
 break
 case'display':
-console.log("Display the current active queues")
+    var Msg = mongoose.model("Msg");
+    var Queue = mongoose.model("QueueList");
+    Queue.find({},function(err, queue){
+        if (err) console.log(err)
+        console.log(queue)
+    })
+
+    console.log("Display the current active queues")
 break
 case'history':
 console.log("Display the queue history")
