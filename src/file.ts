@@ -101,6 +101,7 @@ class file {
     getLineAsTupleById(filename:string, data:number){
         filename = filename+".ini"
         var ndata = "#"+data
+        let tuple: [number,string]
         if(this.fileExists(filename)){
             if((this.dataExists(filename, ndata))){
                 var contents = readFileSync("./"+filename, 'utf8')
@@ -111,7 +112,7 @@ class file {
                 firstPart = firstPart.slice(first+1)
                 first = firstPart.indexOf('\n')
                 var adress = firstPart.slice(0,first)
-                var tuple = [+id,adress]
+                tuple = [+id, adress]
                 console.log(tuple)
                 return tuple
             }
@@ -119,6 +120,7 @@ class file {
     }
     getLineAsTupleByName(filename:string, data:string){
         filename = filename+".ini"
+        let tuple: [number,string]
         if(this.fileExists(filename)){
             if((this.dataExists(filename, data))){
                 var contents = readFileSync("./"+filename, 'utf8')
@@ -131,7 +133,7 @@ class file {
                 var adress = contents.slice(last)
                 var last2 = adress.indexOf("\n")
                 adress = adress.slice(0,last2)
-                var tuple = [+id,adress]
+                tuple = [+id,adress]
                 console.log(tuple)
                 return tuple
             }
@@ -139,6 +141,8 @@ class file {
     }
     getAllLinesAsTuple(filename){
         filename = filename+".ini"
+        let tuple: Array<[number,string]>
+        tuple = []
         if(this.fileExists(filename)){
             var contents = readFileSync("./"+filename, 'utf8')
                 var isNumber:number = contents.lastIndexOf("#")
@@ -148,8 +152,12 @@ class file {
                     nytt = nytt.replace(/ /g, ",")
                     var last = nytt.lastIndexOf(",")
                     nytt = nytt.slice(0,last)
-                    console.log(nytt)
-                    return [nytt]
+                    var nytt2 = nytt.split(",")
+                    for(var i=0; i<nytt2.length; i=i+2){
+                        tuple.push([+nytt2[i],nytt2[i+1]])
+                    }
+                    console.log(tuple)
+                    return tuple
             }
             else{
                 console.log(filename+" is empty")
