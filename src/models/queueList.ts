@@ -3,12 +3,12 @@
 import mongoose = require("mongoose");
 import IQueueList = require("../interfaces/queueList");
 
-interface IQueueListModel extends IQueueList, mongoose.Document{
+export interface IQueueListModel extends IQueueList, mongoose.Document{
 	//Place for custom methods
 };
 
 export var queueListSchema: mongoose.Schema = new mongoose.Schema({
-	queueID: { type: mongoose.Schema.Types.ObjectId, ref: "destinationList" },
+	queueId: { type: mongoose.Schema.Types.ObjectId, ref: "destinationList" },
 	lengthOfQueue: Number,
 	msgArray: [{ type: mongoose.Schema.Types.ObjectId, ref: "msg" }]
 });

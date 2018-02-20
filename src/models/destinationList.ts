@@ -3,12 +3,12 @@
 import mongoose = require("mongoose");
 import IDestinationList = require("../interfaces/destinationList");
 
-interface IDestinationListModel extends IDestinationList, mongoose.Document{
+export interface IDestinationListModel extends IDestinationList, mongoose.Document{
 	//Place for custom methods
 }
 
 export var destinationListSchema: mongoose.Schema = new mongoose.Schema({
-	queueID: Number,
+	queueId: Number,
 	destination: String,
 	active: Boolean
 });

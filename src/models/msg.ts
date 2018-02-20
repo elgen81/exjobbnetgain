@@ -6,7 +6,7 @@ import * as DestinationList from "./destinationList";
 
 
 
-interface IMsgModel extends IMsg, mongoose.Document{
+export interface IMsgModel extends IMsg, mongoose.Document{
 	//Place for custom methods
 };
 

@@ -1,8 +1,9 @@
 //inteface for destinationList.ts
 
 interface IDestinationList{
-	queueID: number,
-	destination: string
+	queueId: number,
+	destination: string,
+	active: boolean
 }
 
 export = IDestinationList; 
