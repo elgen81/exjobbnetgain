@@ -5,7 +5,9 @@ import { IMsgModel } from "./models/msg"
 import { IQueueListModel } from "./models/queueList"
 
 
-
+interface ICallback{
+	( error: Error, staus:boolean ) :void
+}
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(){
 	var File:file = new file();
@@ -41,55 +43,88 @@ export function destinationListSetup(){
 	//console.log(destinationList.find({}));
 }
 
-export async function doesQueueExists(destination):boolean{
+export function doesQueueExists(destination, callback?:ICallback):void{
 	var QueueList = mongoose.model("QueueList");
-	var doesExist:boolean = false;
+	if(!callback){callback = function(){}};var doesExist:boolean = false;
 
-	await QueueList.find({queueId: destination}, function(err, queue){
+	QueueList.find({queueId: destination}, function(err, queue){
 		console.log("queue: " + queue)
 		if(err){
-			doesExist = false;
+			callback(err, false);
 		}
 		else{
 			if(queue.length > 0){
-				doesExist = true;
+				callback(null, true)
 			}
 			else{
-				doesExist = false;
+				callback(null, false);
 			}
 		}
 	})
-	console.log("doesExist: " + doesExist)
-	return doesExist;
 }
 
 
 export function startNewQueue():boolean{
 	return false;
 }
+
 //Push a new message onto the end of the message array in a queue document
-export function queuePush(destination, msgId){
+export function queuePush(destination, msgId, callback?: ICallback){
 	var Msg = mongoose.model("Msg");
 	var Queue = mongoose.model("QueueList");
-	var errReturn;
+	if(!callback){callback = function(){}};
+
 	console.log("Dest: "+ destination)
 	Msg.findById(msgId, function(err, msg:IMsgModel){
-		if(doesQueueExists(destination)){
-			Queue.update(
-				{ queueId: destination },
-				{ $push: {msgArray: msg} });
-			Queue.update(
-				{ queueId: destination },
-				{ $inc: { lengthOfQueue: 1} });
-		}
+		doesQueueExists(destination, function(err, status){
+			console.log("Pushing " + msg._id + " to Queue with destination " + destination)
+			if(err){throw err}
+			if(status)
+			{
+				Queue.update(
+					{ queueId: destination },
+					{ $push: {msgArray: msg} },
+					function(err){
+						if(err) {
+							console.log(err)
+							callback(err, false)}
+						else
+						{
+						Queue.update(
+							{ queueId: destination },
+							{ $inc: { lengthOfQueue: 1} },
+							function(err){
+								if(err){ 
+									console.log(err)
+									callback(err, false)}
+								else
+								{	Queue.findOne({ queueId: destination}).populate('msgArray',function(err){});
+									callback(null, true);
+								}
+							})
+						}
+
+					}
+				);
+			}	
 		else{
 			var newQueue = new Queue({
 				queueId: msg.queueId,
 				lengthOfQueue: 1,
 				msgArray: [msg]
 			});
-			newQueue.save(function(err){console.log(err)});
+			newQueue.save(function(err){
+				if(err){
+					console.log(err)
+					callback(err, false)
+				}
+				else{
+					callback(null, true);
+				}
+			});
 		}
+		})
+			
 	});
 }
 

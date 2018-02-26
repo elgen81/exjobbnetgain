@@ -8,7 +8,7 @@ export interface IQueueListModel extends IQueueList, mongoose.Document{
 };
 
 export var queueListSchema: mongoose.Schema = new mongoose.Schema({
-	queueId: { type: mongoose.Schema.Types.ObjectId, ref: "destinationList" },
+	queueId: Number, //{ type: mongoose.Schema.Types.ObjectId, ref: "destinationList" },
 	lengthOfQueue: Number,
 	msgArray: [{ type: mongoose.Schema.Types.ObjectId, ref: "msg" }]
 });

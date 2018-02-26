@@ -6,6 +6,7 @@ import bodyParser = require("body-parser");
 import mongoose = require("mongoose");
 import sorter = require("./sorter");
 import { IMsgModel } from "./models/msg"
+import { IDestinationListModel } from "./models/destinationList"
 
 var Msg = mongoose.model("Msg");
 var DestList = mongoose.model("DestinationList")
@@ -18,12 +19,12 @@ router.post('/', function(req, res){
 	console.log(req.body.reciver);
 	console.log(req.body.msg);
 	//console.log(msgIn);
-	DestList.find({ destination : req.body.reciver}, function(err, dest){
+	DestList.find({ destination : req.body.reciver}, function(err, dest:Array<IDestinationListModel>){
 
 		if(dest.length > 0){
-			console.log(dest[0]._id)
+			console.log(dest[0].queueId)
 			var msgIn:mongoose.Document = new Msg({
-				queueId: dest[0]._id,
+				queueId: dest[0].queueId,
 				sender: req.connection.remoteAddress,
 				reciver: req.body.reciver,
 				timeRecived: new Date(),
