@@ -6,7 +6,7 @@ import IMsg = require("../interfaces/msg");
 
 
 interface IQueueList{
-	queueId: mongoose.Schema.Types.ObjectId,
+	queueId: number, //mongoose.Schema.Types.ObjectId,
 	msgArray: mongoose.Schema.Types.ObjectId[],
 	lengthOfQueue: number
 };
