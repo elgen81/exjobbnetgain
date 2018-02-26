@@ -1,6 +1,10 @@
 //menu.ts        
 import whitelist = require('./whitelist')
 import mongoose = require("mongoose");
+import {IDestinationListModel} from "./models/destinationList"
+import {IQueueListModel} from "./models/queueList"
+import { DEFAULT_ENCODING } from 'crypto';
+import { lookup } from 'dns';
     
 switch(process.argv[2]){
     case'addWhite':
@@ -24,13 +28,20 @@ switch(process.argv[2]){
     break
     case'display':
         require("./db")
-        var Msg = mongoose.model("Msg");
-        var Queue = mongoose.model("QueueList");
-        Queue.find({},function(err, queue){
+        var Queue = mongoose.model("QueueList")
+        var DestList = mongoose.model("DestinationList")
+        Queue.find({},function(err, queue : Array  <IQueueListModel>){
             if (err) console.log(err)
-            console.log(queue)
+            console.log("IT STARTS HERE")
+            for(var i=0; i< queue.length;i++){
+                DestList.findOne({queueId:queue[i].queueId}, function(err, lists: IDestinationListModel){
+                    if(err) console.log(err)
+                console.log(lists.queueId+": "+lists.destination)
+                })
+            }
+            //console.log(lists[0])
         })
-        console.log("Display the current active queues")
+        console.log("Display the current active queues")   
     break
     case'history':
         console.log("Display the queue history")
