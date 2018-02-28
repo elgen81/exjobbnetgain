@@ -8,8 +8,28 @@ import { DEFAULT_ENCODING } from 'crypto';
 import { lookup } from 'dns';
 const uri:string = "mongodb://127.0.0.1/my_db"
 
-function convDate(recieved:Date, sent:Date){
-   return new Date((sent.getTime() - recieved.getTime())).toISOString().slice(11,-1)    
+function convDate(sent:Date, received:Date){
+   var time =  (sent.getTime() - received.getTime())
+    var delta = Math.abs(time/1000)
+    var days = Math.floor(delta/86400)
+    delta-= days*86400
+    var hours = Math.floor(delta/3600) %24
+    delta-= hours*3600
+    var minutes = Math.floor(delta/60)%60
+    delta- minutes*60
+    var seconds = delta % 60
+
+    var timeString = ""
+    if(days)
+        timeString = timeString+"Days: "+days+", "
+    if(hours)
+        timeString = timeString+ " Hours: "+hours+", "
+    if(minutes)
+        timeString = timeString+ " Minutes: "+minutes+", "
+    if(seconds)
+        timeString = timeString+ " Seconds: "+seconds+", "
+
+   return timeString 
 }
 
 switch(process.argv[2]){
@@ -78,11 +98,11 @@ switch(process.argv[2]){
         if (err){throw err}
         else {
             for(var i=0;i<query.length;i++){
-            console.log("Time sent: "+query[i].timeSent+ 
-            " Time recieved: "+query[i].timeRecieved+
-            " Reciever: "+query[i].reciever+ 
-            " Sender: "+query[i].sender+ 
-            " Time in queue: "+ convDate(query[i].timeRecieved, query[i].timeSent))
+            console.log("Time sent: "+query[i].timeSent.toString().slice(0,24)+" | "+ 
+            "Time received: "+query[i].timeReceived.toString().slice(0,24)+" | "+
+            "Receiver: "+query[i].receiver+" | "+
+            "Sender: "+query[i].sender+" | "+
+            "Time in queue: "+ convDate(query[i].timeSent, query[i].timeReceived))
             }
         }
         mongoose.connection.close()
