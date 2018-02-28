@@ -2,10 +2,16 @@
 import whitelist = require('./whitelist')
 import mongoose = require("mongoose");
 import {IDestinationListModel} from "./models/destinationList"
+import {IMsgModel} from "./models/msg"
 import {IQueueListModel} from "./models/queueList"
 import { DEFAULT_ENCODING } from 'crypto';
 import { lookup } from 'dns';
-    
+const uri:string = "mongodb://127.0.0.1/my_db"
+
+function convDate(recieved:Date, sent:Date){
+   return new Date((sent.getTime() - recieved.getTime())).toISOString().slice(11,-1)    
+}
+
 switch(process.argv[2]){
     case'addWhite':
         if(process.argv.length>3){
@@ -27,23 +33,60 @@ switch(process.argv[2]){
         }
     break
     case'display':
-        require("./db")
-        var Queue = mongoose.model("QueueList")
-        var DestList = mongoose.model("DestinationList")
-        Queue.find({},function(err, queue : Array  <IQueueListModel>){
-            if (err) console.log(err)
-            console.log("IT STARTS HERE")
-            for(var i=0; i< queue.length;i++){
-                DestList.findOne({queueId:queue[i].queueId}, function(err, lists: IDestinationListModel){
-                    if(err) console.log(err)
-                console.log(lists.queueId+": "+lists.destination)
-                })
-            }
-            //console.log(lists[0])
+
+        mongoose.connect(uri, (err) => {
+            if (err){}
+            else{}
         })
+        require("./models/destinationList");
+        var DestList = mongoose.model("DestinationList")
+        DestList.aggregate([
+            {
+               $lookup: {
+                  from: "queuelists",
+                  localField: "queueId",    // field in the orders collection
+                  foreignField: "queueId",  // field in the items collection
+                  as: "queues"
+               }
+            },
+            { "$unwind": "$queues"},
+            {"$project": {
+                "queueId": 1,
+                "destination" : 1
+            }}
+         ], function(err, query)
+        {
+            if (err){throw err}
+            else {
+                for(var i=0;i<query.length;i++){
+                console.log(query[i].queueId+" : "+query[i].destination)
+                }
+            }
+            mongoose.connection.close()
+        } )
         console.log("Display the current active queues")   
     break
     case'history':
+    mongoose.connect(uri, (err) => {
+        if (err){}
+        else{}
+    })
+    require("./models/msg")
+    var msg = mongoose.model("Msg")
+    msg.find({"isSent":true}, function(err, query: Array<IMsgModel>)
+    {
+        if (err){throw err}
+        else {
+            for(var i=0;i<query.length;i++){
+            console.log("Time sent: "+query[i].timeSent+ 
+            " Time recieved: "+query[i].timeRecived+
+            " Reciever: "+query[i].reciver+ 
+            " Sender: "+query[i].sender+ 
+            " Time in queue: "+ convDate(query[i].timeRecived, query[i].timeSent))
+            }
+        }
+        mongoose.connection.close()
+    } )
         console.log("Display the queue history")
     break
     case'errorlog':

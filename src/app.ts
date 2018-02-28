@@ -9,6 +9,7 @@ require("./db");
 //Route setups
 import InputController = require("./InputController");
 app.use("/input", InputController);
-
+/*import OutputController = require("./OutputController");
+app.use("/output", OutputController);*/
 
 export = app;

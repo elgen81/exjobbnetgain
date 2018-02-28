@@ -25,7 +25,8 @@ class sorter{
 						repo.queuePush(msg.queueId, msgId,function(err, status){
 							if(err){callback(err, false)}
 							else{
-							msg.update({ isSorted : true}, function(err){
+							msg.isSorted = true;
+							msg.save(function(err){
 								if(err){callback(err, false)}
 								else{
 									console.log(msg)
