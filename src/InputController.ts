@@ -29,7 +29,7 @@ router.post('/', function(req, res){
 				queueId: dest.queueId,
 				sender: req.connection.remoteAddress,
 				receiver: req.body.receiver,
-				timeRecived: new Date(),
+				timeReceived: new Date(),
 				isSorted: false,
 				isSent: false,
 				msg: req.body.msg

@@ -9,7 +9,7 @@ interface IMsg{
 	receiver: string,
 	isSent: boolean,
 	isSorted: boolean,
-	timeRecived: Date,
+	timeReceived: Date,
 	timeSent: Date,
 	msg: string
 };

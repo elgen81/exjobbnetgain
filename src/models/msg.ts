@@ -16,7 +16,7 @@ export var msgSchema: mongoose.Schema = new mongoose.Schema({
 	receiver: String,
 	isSent: Boolean,
 	isSorted: Boolean,
-	timeRecived: Date,
+	timeReceived: Date,
 	timeSent: Date,
 	msg: String
 });
