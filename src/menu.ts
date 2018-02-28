@@ -79,10 +79,10 @@ switch(process.argv[2]){
         else {
             for(var i=0;i<query.length;i++){
             console.log("Time sent: "+query[i].timeSent+ 
-            " Time recieved: "+query[i].timeRecived+
-            " Reciever: "+query[i].reciver+ 
+            " Time recieved: "+query[i].timeRecieved+
+            " Reciever: "+query[i].reciever+ 
             " Sender: "+query[i].sender+ 
-            " Time in queue: "+ convDate(query[i].timeRecived, query[i].timeSent))
+            " Time in queue: "+ convDate(query[i].timeRecieved, query[i].timeSent))
             }
         }
         mongoose.connection.close()
