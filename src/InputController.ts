@@ -5,8 +5,10 @@ var router = express.Router();
 import bodyParser = require("body-parser");
 import mongoose = require("mongoose");
 import sorter = require("./sorter");
-import { IMsgModel } from "./models/msg"
 import { IDestinationListModel } from "./models/destinationList"
+import { IMsgModel } from "./models/msg"
+import { IQueueListModel } from "./models/queueList"
+import repo = require("./dbRepository");
 
 var Msg = mongoose.model("Msg");
 var DestList = mongoose.model("DestinationList")
@@ -16,17 +18,17 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.post('/', function(req, res){
 	
 	
-	console.log(req.body.reciver);
+	console.log(req.body.receiver);
 	console.log(req.body.msg);
 	//console.log(msgIn);
-	DestList.find({ destination : req.body.reciver}, function(err, dest:Array<IDestinationListModel>){
+	DestList.findOne({ destination : req.body.receiver}, function(err, dest:IDestinationListModel){
 
-		if(dest.length > 0){
-			console.log(dest[0].queueId)
+		if(dest){
+			console.log(dest.queueId)
 			var msgIn:mongoose.Document = new Msg({
-				queueId: dest[0].queueId,
+				queueId: dest.queueId,
 				sender: req.connection.remoteAddress,
-				reciver: req.body.reciver,
+				receiver: req.body.receiver,
 				timeRecived: new Date(),
 				isSorted: false,
 				isSent: false,
@@ -51,11 +53,24 @@ router.post('/', function(req, res){
 	}).limit(1);
 });
 
-router.get('/', function(req, res){
-	Msg.find({}, function(err, msg){
-		if(err) {return res.status(500).send("There was a problem finding the users.");}
-		res.status(200).send(msg);
-	});
+router.get('/:dest', function(req, res){
+	console.log(req.params.dest)
+	repo.queuePop(req.params.dest, function(err, queue:IQueueListModel){
+		console.log("msgId: "+ queue.lastSentMsg)
+		if(err){ console.log("In QueuePop(): "+err); res.status(500).send("Error getting message: " + err)}
+		Msg.findById(queue.lastSentMsg, function(err, msg:IMsgModel){
+			if(err){ console.log("In Msg.Find(): "+err); res.status(404).send("Error getting message: " + err) }
+			if(msg){
+				console.log(msg)
+				res.status(200).send(msg)
+				msg.isSent = true;
+				msg.save(function(err){
+					queue.timeOfLastSent = new Date();
+				})
+			}
+			else{ res.status(200).send("No messages to send")}	
+			})
+	})
 });
 
 export = router;

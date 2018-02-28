@@ -13,7 +13,7 @@ export interface IMsgModel extends IMsg, mongoose.Document{
 export var msgSchema: mongoose.Schema = new mongoose.Schema({
 	queueId: Number, //{ type: mongoose.Schema.Types.ObjectId, ref: "destinationList" },
 	sender: String,
-	reciver: String,
+	receiver: String,
 	isSent: Boolean,
 	isSorted: Boolean,
 	timeRecived: Date,

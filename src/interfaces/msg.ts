@@ -6,7 +6,7 @@ import IDestinationList = require("../interfaces/destinationList");
 interface IMsg{
 	queueId: number,//mongoose.Schema.Types.ObjectId, //IDestinationList,
 	sender: string,
-	reciver: string,
+	receiver: string,
 	isSent: boolean,
 	isSorted: boolean,
 	timeRecived: Date,

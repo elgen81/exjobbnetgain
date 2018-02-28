@@ -5,8 +5,11 @@ import { IMsgModel } from "./models/msg"
 import { IQueueListModel } from "./models/queueList"
 
 
-interface ICallback{
+interface ICallbackB{
 	( error: Error, staus:boolean ) :void
+}
+interface ICallbackQ{
+	( error: Error, result:IQueueListModel ) :void
 }
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(){
@@ -43,7 +46,7 @@ export function destinationListSetup(){
 	//console.log(destinationList.find({}));
 }
 
-export function doesQueueExists(destination, callback?:ICallback):void{
+export function doesQueueExists(destination, callback?:ICallbackB):void{
 	var QueueList = mongoose.model("QueueList");
 	if(!callback){callback = function(){}};var doesExist:boolean = false;
 
@@ -68,6 +71,51 @@ export function startNewQueue():boolean{
 	return false;
 }
 
+
+//Push a new message onto the end of the message array in a queue document
+export function queuePush(destination, msgId, callback?: ICallbackB){
+	var Msg = mongoose.model("Msg");
+	var Queue = mongoose.model("QueueList");
+	if(!callback){callback = function(){}};
+
+	console.log("Dest: "+ destination)
+		doesQueueExists(destination, function(err, status){
+			console.log("Pushing " + msgId + " to Queue with destination " + destination)
+			if(err){throw err}
+			if(status)
+			{
+				Queue.findOne({queueId: destination}, function(err, queue:IQueueListModel){
+					queue.msgArray.push(msgId)
+					queue.lengthOfQueue = queue.lengthOfQueue + 1
+					queue.save(function(err, queue:IQueueListModel){
+						queue.populate('msgArray')
+						callback(null, true)
+					})
+				})
+			}	
+		else{
+			var newQueue = new Queue({
+				queueId: destination,
+				lengthOfQueue: 1,
+				lastSentMsg: null,
+				timeOfLastSent: null,
+				msgArray: [msgId]
+			});
+			newQueue.save(function(err, queue){
+				if(err){
+					console.log(err)
+					callback(err, false)
+				}
+				else{
+					queue.populate('msgArray')
+					callback(null, true);
+				}
+			});
+		}
+		})
+}
+
+/*
 //Push a new message onto the end of the message array in a queue document
 export function queuePush(destination, msgId, callback?: ICallback){
 	var Msg = mongoose.model("Msg");
@@ -75,72 +123,66 @@ export function queuePush(destination, msgId, callback?: ICallback){
 	if(!callback){callback = function(){}};
 
 	console.log("Dest: "+ destination)
-	Msg.findById(msgId, function(err, msg:IMsgModel){
+	//Msg.findById(msgId, function(err, msg:IMsgModel){
 		doesQueueExists(destination, function(err, status){
 			console.log("Pushing " + msg._id + " to Queue with destination " + destination)
 			if(err){throw err}
 			if(status)
 			{
-				Queue.update(
-					{ queueId: destination },
-					{ $push: {msgArray: msg} },
-					function(err){
-						if(err) {
-							console.log(err)
-							callback(err, false)}
-						else
-						{
-						Queue.update(
-							{ queueId: destination },
-							{ $inc: { lengthOfQueue: 1} },
-							function(err){
-								if(err){ 
-									console.log(err)
-									callback(err, false)}
-								else
-								{	Queue.findOne({ queueId: destination}).populate('msgArray',function(err){});
-									callback(null, true);
-								}
-							})
-						}
-
-					}
-				);
+				Queue.findOne({queueId: destination}, function(err, queue:IQueueListModel){
+					queue.msgArray.push(msg._id)
+					queue.lengthOfQueue = queue.lengthOfQueue + 1
+					queue.save(function(err, queue:IQueueListModel){
+						queue.populate('msgArray')
+					})
+				})
 			}	
 		else{
 			var newQueue = new Queue({
 				queueId: msg.queueId,
 				lengthOfQueue: 1,
-				msgArray: [msg]
+				msgArray: [msg._id]
 			});
-			newQueue.save(function(err){
+			newQueue.save(function(err, queue){
 				if(err){
 					console.log(err)
 					callback(err, false)
 				}
 				else{
+					queue.populate('msgArray')
 					callback(null, true);
 				}
 			});
 		}
 		})
 			
-	});
+	//});
 }
 
-//Retrieves the first element in the message array of a queue document
-export function queuePop(queueId:string){
 
+*/
+
+
+
+//Retrieves the first element in the message array of a queue document
+export function queuePop(queueId:number, callback?:ICallbackQ){
+	if(!callback){callback = function(){}};
 	var Queue = mongoose.model("QueueList");
-	var msgReturn;
-	Queue.update(
-		{ queueId: queueId},
-		{ $pop: { msgArray: -1} }, function(err, msg){
-			msgReturn = msg;
-		});
-	Queue.update(
-			{ queueId: queueId },
-			{ $inc: { lengthOfQueue: -1} });
-	return msgReturn;
+
+	Queue.findOne({queueId: queueId}, function(err, queue:IQueueListModel){
+		if(err)
+			{ callback(err, null) }
+		else if(!queue)
+			{ callback(new Error("Could not find queue"), null)}
+		else{
+			console.log(queue)
+			queue.lastSentMsg = queue.msgArray.shift()
+			queue.lengthOfQueue = queue.lengthOfQueue + 1;
+			queue.save(function(err, queue){
+				if(err){ callback(err, null) }
+				else { callback(null, queue) }
+			})
+		}
+	})
 }
 

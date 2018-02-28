@@ -7,8 +7,10 @@ import IMsg = require("../interfaces/msg");
 
 interface IQueueList{
 	queueId: number, //mongoose.Schema.Types.ObjectId,
-	msgArray: mongoose.Schema.Types.ObjectId[],
-	lengthOfQueue: number
+	lengthOfQueue: number,
+	lastSentMsg: mongoose.Schema.Types.ObjectId,
+	timeOfLastSent: Date,
+	msgArray: mongoose.Schema.Types.ObjectId[]
 };
 
 export = IQueueList;
