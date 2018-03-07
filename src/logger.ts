@@ -39,7 +39,7 @@ new (require('winston-daily-rotate-file'))({
 export function relPath(path:string){
     return path.replace(process.cwd(),"")
 }
-export function errorController(path:string, err, severity, optional=''){
+export function logController(path:string, err, severity, optional=''){
     path = path.replace(process.cwd(),"")
     switch(severity){
     case'error':

@@ -1,6 +1,7 @@
 import mongoose = require("mongoose");
 import repo = require("./dbRepository");
 import { IMsgModel} from "./models/msg"
+import { logController} from './logger'
 
 interface ICallback{
 	( error: Error, staus:boolean ) :void

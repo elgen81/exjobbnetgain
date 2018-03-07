@@ -1,21 +1,21 @@
 //whitelist.ts
 import File =  require("./file")
+import {logController} from './logger'
 
 var file = new File
 
 function whitelist(action:string, adress) {
     switch(action){
     case'add':
-        console.log("Add "+adress+" to whitelist")
+        logController(process.argv[1], 'Add '+ adress + 'to whitelist', 'info')
         var test = adress.match(/\w+\.\w+\.\w+\:\d+/g)
-        console.log(test)
         if(test)
         file.appendLine('whitelist', adress)
         else
-        console.log("follow the format zzz.adress.yyy:xxxx")
+        logController(process.argv[1], 'Follow the format zzz.adress.yyy:xxxx', 'info')
     break
     case'remove':
-        console.log("Remove "+adress+" from whitelist")
+        logController(process.argv[1], 'Remove '+adress+' from whitelist', 'info')
         file.removeLine('whitelist',adress)
     break
     case'display':

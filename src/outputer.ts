@@ -7,6 +7,7 @@ import sorter = require("./sorter");
 import { IDestinationListModel } from "./models/destinationList"
 import { IMsgModel } from "./models/msg"
 import { IQueueListModel } from "./models/queueList"
+import { logController} from "./logger"
 import repo = require("./dbRepository");
 
 interface ICallbackB{
@@ -16,8 +17,13 @@ interface ICallbackB{
 export function out(dest:number, res){
 	console.log("in out()")
 	sendOut(dest, res, function(err, status){
-		if(err) throw err;
-		else if( status){ console.log("pre recursive call"); out(dest, res);} 
+		if(err){
+			logController(process.argv[1], err, 'error', "Out")
+		} 
+		else if( status){
+			console.log("pre recursive call"); 
+			out(dest, res);
+		} 
 	})
 }
 
@@ -29,7 +35,9 @@ function sendOut(dest:number, res, cb:ICallbackB){
 		if(err) throw err
 
 		msg.findOne({_id: queue.lastSentMsg}, function(err, msgToSend:IMsgModel){
-			if(err) throw err;
+			if(err){
+				logController(process.argv[1], err , 'error', "sendOut")
+			} 
 			console.log("in send")
 			console.log(queue.lengthOfQueue)
 			//res.send(msgToSend)

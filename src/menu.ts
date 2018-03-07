@@ -6,7 +6,7 @@ import {IMsgModel} from "./models/msg"
 import {IQueueListModel} from "./models/queueList"
 import { DEFAULT_ENCODING } from 'crypto'
 import { lookup } from 'dns'
-import {errorController} from './logger'
+import {logController} from './logger'
 import { readFileSync, writeFileSync, readFile, realpath } from 'fs'
 import { create } from "domain"
 
@@ -42,7 +42,7 @@ switch(process.argv[2]){
             whitelist("add", process.argv[3])
         }
         else{
-            errorController(process.argv[1], "please provide an adress for the output", "info", process.argv[2])
+            logController(process.argv[1], "please provide an adress for the output", "info", process.argv[2])
         }
     break
     case'dispWhite':
@@ -53,14 +53,14 @@ switch(process.argv[2]){
             whitelist("remove", process.argv[3])
         }
         else{
-            errorController(process.argv[1], "Please provide an adress to be removed", "info", process.argv[2])
+            logController(process.argv[1], "Please provide an adress to be removed", "info", process.argv[2])
         }
     break
     case'display':
 
         mongoose.connect(uri, (err) => {
             if (err){
-                errorController(process.argv[1], err, "error", process.argv[2])
+                logController(process.argv[1], err, "error", process.argv[2])
             }
         })
         require("./models/destinationList");
@@ -82,7 +82,7 @@ switch(process.argv[2]){
          ], function(err, query)
         {
             if (err){
-                errorController(process.argv[1], err, "error", process.argv[2])
+                logController(process.argv[1], err, "error", process.argv[2])
             }
             else {
                 for(var i=0;i<query.length;i++){
@@ -96,14 +96,14 @@ switch(process.argv[2]){
     case'history':
     mongoose.connect(uri, (err) => {
         if (err){
-            errorController(process.argv[1], err, "error", process.argv[2])
+            logController(process.argv[1], err, "error", process.argv[2])
         }
     })
     require("./models/msg")
     var msg = mongoose.model("Msg")
     msg.find({"isSent":true}, function(err, query: Array<IMsgModel>)
     {
-        if (err){errorController(process.argv[1], err, "error", process.argv[2])}
+        if (err){logController(process.argv[1], err, "error", process.argv[2])}
         else {
             for(var i=0;i<query.length;i++){
             console.log("Time sent: "+query[i].timeSent.toString().slice(0,24)+" | "+ 
@@ -126,7 +126,7 @@ switch(process.argv[2]){
         if(test){
             fs.readFile("./errLog/log."+date,function(err,data){
                 if(err){
-                    errorController(process.argv[1], err, "error", process.argv[2])
+                    logController(process.argv[1], err, "error", process.argv[2])
                 }
                 else{
                 console.log(data.toString())
@@ -134,11 +134,11 @@ switch(process.argv[2]){
             })
         }
         else{
-            errorController(process.argv[1], "Please provide a correct date yyyy-mm-dd to view", "info", process.argv[2])
+            logController(process.argv[1], "Please provide a correct date yyyy-mm-dd to view", "info", process.argv[2])
         }
     }
     else{
-        errorController(process.argv[1], "Please provide a correct date yyyy-mm-dd to view", "info", process.argv[2])
+        logController(process.argv[1], "Please provide a correct date yyyy-mm-dd to view", "info", process.argv[2])
     }
     break
     case'restart':
@@ -152,7 +152,7 @@ switch(process.argv[2]){
             whitelist("tupleId",process.argv[3])
         }
         else{
-            errorController(process.argv[1], "Please provide an id for the tuple to be viewed", "info", process.argv[2])
+            logController(process.argv[1], "Please provide an id for the tuple to be viewed", "info", process.argv[2])
         }
     break
     case'tupleName':
@@ -160,7 +160,7 @@ switch(process.argv[2]){
             whitelist("tupleName",process.argv[3])
         }
         else{
-            errorController(process.argv[1], "Please provide an id for the tuple to be viewed", "info", process.argv[2])
+            logController(process.argv[1], "Please provide an id for the tuple to be viewed", "info", process.argv[2])
         }
     break
     case'tupleAll':

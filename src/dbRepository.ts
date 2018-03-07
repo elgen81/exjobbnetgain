@@ -3,6 +3,7 @@ import file = require("./file");
 import { IDestinationListModel } from "./models/destinationList"
 import { IMsgModel } from "./models/msg"
 import { IQueueListModel } from "./models/queueList"
+import { logController} from "./logger"
 
 
 interface ICallbackB{
@@ -23,8 +24,8 @@ export function destinationListSetup(){
 	  destinationList.count({queueId: entry[0]} && {destination: entry[1]}, function(err, count){
 	    if(count > 0)
 	    {
-	      destinationList.update({ queueId: entry[0]} && {destination: entry[1]}, {active: true});
-	      console.log(entry +" now active.");  
+		  destinationList.update({ queueId: entry[0]} && {destination: entry[1]}, {active: true});
+		  logController(process.argv[1], entry+ ' now active.', "info")
 	    }
 	    else
 	    {
@@ -34,16 +35,16 @@ export function destinationListSetup(){
 	        active: true
 	      });
 	      newDestination.save(function(err){
-	      if(err)
-	        { console.log("Error adding new destination."); }
-	      else
-	        { console.log("New destination added: " + entry[0].toString +" "+ entry[1]); }
+	      if(err){ 
+				logController(process.argv[1], 'Error adding new destination', "error", "New Destination")
+			}
+	      else{ 
+				logController(process.argv[1], "New destination added: " + entry[0].toString +" "+ entry[1], "info")
+			}
 	      });
 	    }
 	  });
 	}
-	//return true;
-	//console.log(destinationList.find({}));
 }
 
 export function doesQueueExists(destination, callback?:ICallbackB):void{
@@ -51,7 +52,7 @@ export function doesQueueExists(destination, callback?:ICallbackB):void{
 	if(!callback){callback = function(){}};var doesExist:boolean = false;
 
 	QueueList.find({queueId: destination}, function(err, queue){
-		console.log("queue: " + queue)
+		logController(process.argv[1], "Queue: " + queue, "info")
 		if(err){
 			callback(err, false);
 		}
@@ -77,11 +78,12 @@ export function queuePush(destination, msgId, callback?: ICallbackB){
 	var Msg = mongoose.model("Msg");
 	var Queue = mongoose.model("QueueList");
 	if(!callback){callback = function(){}};
-
-	console.log("Dest: "+ destination)
+	logController(process.argv[1], "Destination: "+destination, "info")
 		doesQueueExists(destination, function(err, status){
-			console.log("Pushing " + msgId + " to Queue with destination " + destination)
-			if(err){throw err}
+			logController(process.argv[1], "Pushing " + msgId + " to queue with destination " + destination, "info")
+			if(err){
+				logController(process.argv[1], err, "error", 'queuePush')
+			}
 			if(status)
 			{
 				Queue.findOne({queueId: destination}, function(err, queue:IQueueListModel){
@@ -103,7 +105,7 @@ export function queuePush(destination, msgId, callback?: ICallbackB){
 			});
 			newQueue.save(function(err, queue){
 				if(err){
-					console.log(err)
+					logController(process.argv[1], err, "error", "Create new queue")
 					callback(err, false)
 				}
 				else{
