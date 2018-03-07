@@ -9,6 +9,7 @@ import { IDestinationListModel } from "./models/destinationList"
 import { IMsgModel } from "./models/msg"
 import { IQueueListModel } from "./models/queueList"
 import repo = require("./dbRepository");
+import outer = require("./outputer");
 
 var Msg = mongoose.model("Msg");
 var DestList = mongoose.model("DestinationList")
@@ -23,7 +24,7 @@ router.post('/', function(req, res){
 	//console.log(msgIn);
 	DestList.findOne({ destination : req.body.receiver}, function(err, dest:IDestinationListModel){
 
-		if(dest){
+		if(dest && dest.active){
 			console.log(dest.queueId)
 			var msgIn:mongoose.Document = new Msg({
 				queueId: dest.queueId,
@@ -54,6 +55,11 @@ router.post('/', function(req, res){
 });
 
 router.get('/:dest', function(req, res){
+	console.log("in get")
+	outer.out(req.params.dest, res);
+});
+
+/*router.get('/:dest', function(req, res){
 	console.log(req.params.dest)
 	repo.queuePop(req.params.dest, function(err, queue:IQueueListModel){
 		console.log("msgId: "+ queue.lastSentMsg)
@@ -71,6 +77,6 @@ router.get('/:dest', function(req, res){
 			else{ res.status(200).send("No messages to send")}	
 			})
 	})
-});
+});*/
 
 export = router;

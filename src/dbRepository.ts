@@ -86,7 +86,7 @@ export function queuePush(destination, msgId, callback?: ICallbackB){
 			{
 				Queue.findOne({queueId: destination}, function(err, queue:IQueueListModel){
 					queue.msgArray.push(msgId)
-					queue.lengthOfQueue = queue.lengthOfQueue + 1
+					queue.lengthOfQueue = queue.msgArray.length
 					queue.save(function(err, queue:IQueueListModel){
 						queue.populate('msgArray')
 						callback(null, true)
@@ -177,7 +177,7 @@ export function queuePop(queueId:number, callback?:ICallbackQ){
 		else{
 			console.log(queue)
 			queue.lastSentMsg = queue.msgArray.shift()
-			queue.lengthOfQueue = queue.lengthOfQueue + 1;
+			queue.lengthOfQueue = queue.msgArray.length;
 			queue.save(function(err, queue){
 				if(err){ callback(err, null) }
 				else { callback(null, queue) }
