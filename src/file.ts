@@ -1,6 +1,8 @@
 //file.ts
 import { readFileSync, writeFileSync, readFile } from "fs";
 import { create } from "domain";
+import { errorController} from './logger'
+const {logger} = require('./logger')
 
 class file {
     private fs = require('fs')
@@ -10,6 +12,7 @@ class file {
     showFile(filename:string){
         this.fs.readFile("./"+filename+".ini", function (err, data){
             if(err){
+                errorController(process.argv[1], err, 'error')
                 return console.log(filename+".ini is empty")
             }
         console.log(data.toString());
@@ -24,22 +27,22 @@ class file {
                 if(err){
                     return console.log(err);
                 }
-                console.log(data+" added to file "+filename)
+                errorController(process.argv[1], data+' added to file '+filename, 'info')
                 })
             }
             else{
-                console.log(data+" already added")
+                errorController(process.argv[1], data +'already added', 'info')
             }
         }
         else{
-            console.log("Error adding to file")
+            errorController(process.argv[1], 'Error adding to file', 'error', 'Adding lines to .ini')
         }
     }
     
     fileExists(filename:string){
         var exists = this.fs.existsSync("./"+filename)
             if(!exists){
-                console.log(filename+" does not exist creating")
+                errorController(process.argv[1], filename+ ' does not exists, creating it', 'info')
                 var res = this.createFile('./'+filename)
                 if(!res){
                     return 0
@@ -51,6 +54,7 @@ class file {
     createFile(filename:string){
         var err = this.fs.writeFileSync(filename,'')
         if(err){
+            errorController(process.argv[1], 'Error crating file', 'error', "CreateFile")
             console.log("Error creating File")
             return 0
         }
@@ -160,12 +164,12 @@ class file {
                     return tuple
             }
             else{
-                console.log(filename+" is empty")
+                errorController(process.argv[1], filename +'is empty', 'info')
                 return []
             }
         }
         else{
-            console.log("File is empty")
+            errorController(process.argv[1], 'File is empty', 'info')
             return []
         }    
     }

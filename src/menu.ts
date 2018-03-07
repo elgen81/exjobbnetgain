@@ -1,11 +1,15 @@
 //menu.ts        
 import whitelist = require('./whitelist')
-import mongoose = require("mongoose");
+import mongoose = require("mongoose")
 import {IDestinationListModel} from "./models/destinationList"
 import {IMsgModel} from "./models/msg"
 import {IQueueListModel} from "./models/queueList"
-import { DEFAULT_ENCODING } from 'crypto';
-import { lookup } from 'dns';
+import { DEFAULT_ENCODING } from 'crypto'
+import { lookup } from 'dns'
+import {errorController} from './logger'
+import { readFileSync, writeFileSync, readFile, realpath } from 'fs'
+import { create } from "domain"
+
 const uri:string = "mongodb://127.0.0.1/my_db"
 
 function convDate(sent:Date, received:Date){
@@ -38,7 +42,7 @@ switch(process.argv[2]){
             whitelist("add", process.argv[3])
         }
         else{
-            console.log("please provide an adress for the output")
+            errorController(process.argv[1], "please provide an adress for the output", "info", process.argv[2])
         }
     break
     case'dispWhite':
@@ -49,14 +53,15 @@ switch(process.argv[2]){
             whitelist("remove", process.argv[3])
         }
         else{
-            console.log("please provide an adress for the adress to be removed")
+            errorController(process.argv[1], "Please provide an adress to be removed", "info", process.argv[2])
         }
     break
     case'display':
 
         mongoose.connect(uri, (err) => {
-            if (err){}
-            else{}
+            if (err){
+                errorController(process.argv[1], err, "error", process.argv[2])
+            }
         })
         require("./models/destinationList");
         var DestList = mongoose.model("DestinationList")
@@ -76,7 +81,9 @@ switch(process.argv[2]){
             }}
          ], function(err, query)
         {
-            if (err){throw err}
+            if (err){
+                errorController(process.argv[1], err, "error", process.argv[2])
+            }
             else {
                 for(var i=0;i<query.length;i++){
                 console.log(query[i].queueId+" : "+query[i].destination)
@@ -88,14 +95,15 @@ switch(process.argv[2]){
     break
     case'history':
     mongoose.connect(uri, (err) => {
-        if (err){}
-        else{}
+        if (err){
+            errorController(process.argv[1], err, "error", process.argv[2])
+        }
     })
     require("./models/msg")
     var msg = mongoose.model("Msg")
     msg.find({"isSent":true}, function(err, query: Array<IMsgModel>)
     {
-        if (err){throw err}
+        if (err){errorController(process.argv[1], err, "error", process.argv[2])}
         else {
             for(var i=0;i<query.length;i++){
             console.log("Time sent: "+query[i].timeSent.toString().slice(0,24)+" | "+ 
@@ -110,7 +118,28 @@ switch(process.argv[2]){
         console.log("Display the queue history")
     break
     case'errorlog':
-        console.log("Displaying errorlog")
+    const fs = require('fs')
+    if(process.argv.length>3){
+        const date = process.argv[3]
+        var test = date.match(/\d\d\d\d-\d\d-\d\d/g)
+        var path = require('path')
+        if(test){
+            fs.readFile("./errLog/log."+date,function(err,data){
+                if(err){
+                    errorController(process.argv[1], err, "error", process.argv[2])
+                }
+                else{
+                console.log(data.toString())
+                }
+            })
+        }
+        else{
+            errorController(process.argv[1], "Please provide a correct date yyyy-mm-dd to view", "info", process.argv[2])
+        }
+    }
+    else{
+        errorController(process.argv[1], "Please provide a correct date yyyy-mm-dd to view", "info", process.argv[2])
+    }
     break
     case'restart':
         console.log("Restarting service")
@@ -123,7 +152,7 @@ switch(process.argv[2]){
             whitelist("tupleId",process.argv[3])
         }
         else{
-            console.log("please provide an id for the tuple to be viewed")
+            errorController(process.argv[1], "Please provide an id for the tuple to be viewed", "info", process.argv[2])
         }
     break
     case'tupleName':
@@ -131,7 +160,7 @@ switch(process.argv[2]){
             whitelist("tupleName",process.argv[3])
         }
         else{
-            console.log("please provide an adress for the tuple to be viewed")
+            errorController(process.argv[1], "Please provide an id for the tuple to be viewed", "info", process.argv[2])
         }
     break
     case'tupleAll':

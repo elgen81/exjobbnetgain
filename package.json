@@ -14,7 +14,9 @@
     "mongodb": "^3.0.2",
     "mongoose": "^5.0.5",
     "promise": "^8.0.1",
-    "typescript": "^2.7.1"
+    "typescript": "^2.7.1",
+    "winston": "^3.0.0-rc1",
+    "winston-daily-rotate-file": "^2.0.0-rc.1"
   },
   "devDependencies": {
     "@types/node": "^9.4.6"
