@@ -55,11 +55,13 @@ require("./models/queueList");
 //Instantiate DestinationList collection to represent whitelist.ini
 repo.destinationListSetup();
 
+
+
 console.log(app.settings.env)
 //Route setups
 import InputController = require("./InputController");
 app.use("/input", InputController);
-/*import OutputController = require("./OutputController");
-app.use("/output", OutputController);*/
+import OutputController = require("./OutputController");
+app.use("/output", OutputController);
 
 export = app;
