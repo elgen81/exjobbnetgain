@@ -15,7 +15,7 @@
     "mongoose": "^5.0.5",
     "promise": "^8.0.1",
     "typescript": "^2.7.1",
-    "winston": "^3.0.0-rc1",
+    "winston": "^3.0.0-rc2",
     "winston-daily-rotate-file": "^2.0.0-rc.1"
   },
   "devDependencies": {

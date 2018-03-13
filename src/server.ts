@@ -2,7 +2,9 @@
 
 import app = require("./app");
 import {logController} from './logger'
-var port:number = 3000;
+import { config } from "./_config";
+
+var port:number = config.port || 3000;
 
 var server = app.listen(port, function(err){
 	if(err) { 

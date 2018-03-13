@@ -2,11 +2,13 @@
 
 import * as mongoose from "mongoose";
 import repo = require("./dbRepository");
-import {logController} from './logger'
-
+import {logController} from './logger';
+import { config } from "./_config";
+import app = require("./app")
 //DATABASE CONNECTION
 var uri:string = "mongodb://127.0.0.1/my_db";
-
+//console.log(process.env)
+//var uri:string = config.mongoURI[app.settings.env]
 mongoose.connect(uri, (err) => {
   if (err) {
     logController(process.argv[1], err, "error", "Connection MongoDb")
@@ -21,7 +23,7 @@ mongoose.connect(uri, (err) => {
 // When successfully connected
 mongoose.connection.on('connected', function () {
   logController(process.argv[1], "Mongoose default connection open to " + uri, "info", "Connection success Mongoose")  
-}); 
+});
 
 // If the connection throws an error
 mongoose.connection.on('error',function (err) {
