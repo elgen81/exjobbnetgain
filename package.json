@@ -4,22 +4,25 @@
   "description": "Message queue management system",
   "main": "index.js",
   "dependencies": {
+    "@moebius/http-graceful-shutdown": "^1.0.1",
     "@types/async": "^2.0.47",
     "@types/express": "^4.11.1",
-    "@types/lodash": "^4.14.102",
-    "@types/mongodb": "^3.0.5",
-    "@types/mongoose": "^5.0.2",
+    "@types/lodash": "^4.14.104",
+    "@types/mongodb": "^3.0.7",
+    "@types/mongoose": "^5.0.7",
     "async": "^2.6.0",
-    "express": "^4.16.2",
-    "mongodb": "^3.0.2",
-    "mongoose": "^5.0.5",
+    "axios": "^0.18.0",
+    "express": "^4.16.3",
+    "mongodb": "^3.0.4",
+    "mongoose": "^5.0.10",
+    "npm": "^5.7.1",
     "promise": "^8.0.1",
-    "typescript": "^2.7.1",
-    "winston": "^3.0.0-rc2",
-    "winston-daily-rotate-file": "^2.0.0-rc.1"
+    "typescript": "^2.7.2",
+    "winston": "^3.0.0-rc1",
+    "winston-daily-rotate-file": "^2.0.0-rc.2"
   },
   "devDependencies": {
-    "@types/node": "^9.4.6"
+    "@types/node": "^9.4.7"
   },
   "scripts": {
     "test": "runtest"

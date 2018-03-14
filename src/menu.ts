@@ -5,11 +5,15 @@ import {IDestinationListModel} from "./models/destinationList"
 import {IMsgModel} from "./models/msg"
 import {IQueueListModel} from "./models/queueList"
 import { DEFAULT_ENCODING } from 'crypto'
-import { lookup } from 'dns'
+import { lookup, TIMEOUT } from 'dns'
 import {logController} from './logger'
 import { readFileSync, writeFileSync, readFile, realpath } from 'fs'
 import { create } from "domain"
+import {config} from "./_config"
+import axios from 'axios'
+import express = require('express')
 
+var router = express.Router();
 const uri:string = "mongodb://127.0.0.1/my_db"
 
 function convDate(sent:Date, received:Date){
@@ -141,11 +145,65 @@ switch(process.argv[2]){
         logController(process.argv[1], "Please provide a correct date yyyy-mm-dd to view", "info", process.argv[2])
     }
     break
-    case'restart':
-        console.log("Restarting service")
+    case'diagnostics':
+        axios.get('http://127.0.0.1:'+config.port+'/menu/getStatus').then(function(res){
+            if(res.status == 200){
+                console.log('%s\x1b[32m%s\x1b[0m','Server: ','Ready')
+                switch(res.data.DBStatus){
+                case 0:
+                    console.log('%s\x1b[31m%s\x1b[0m','DBStatus: ','Disconnected')
+                break
+
+                case 1:
+                    console.log('%s\x1b[32m%s\x1b[0m','DBStatus: ','Connected')
+                break
+                
+                case 2:
+                    console.log('%s\x1b[33m%s\x1b[0m','DBStatus: ','Connecting')    
+                break
+
+                case 3:
+                console.log('%s\x1b[33m%s\x1b[0m','DBStatus: ','Disconnecting')
+                break                    
+                }
+            }
+        }).catch(function(err){
+            console.log('%s\x1b[31m%s\x1b[0m','Server: ','Down')
+            console.log('%s\x1b[31m%s\x1b[0m','DBStatus: ','Down')
+        })
     break
     case'shutdown':
-        console.log("Saving queues and turning of system")
+        axios.get('http://127.0.0.1:'+config.port+'/menu/getStatus').then(function(res){
+            if(res.status == 200){
+                axios.post('http://127.0.0.1:'+config.port+'/menu/shutdown').catch(function (error) {
+                    if (error.getresponse) {
+                        // The request was made and the server responded with a status code
+                        // that falls out of the range of 2xx
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                    } 
+                    else if (error.request) {
+                        // The request was made but no response was received
+                        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                        // http.ClientRequest in node.js
+                        console.log(error.request);
+                    } 
+                    else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log('Error', error.message);
+                        }
+                        console.log("5"+error.config);
+                        })
+                        console.log("Saving queues and turning off system")
+                    }
+            else {
+                logController(process.argv[1], "Server is not running", "info")
+            }
+        }).catch(function(err){
+            logController(process.argv[1], "Server is not running", "info")
+               // console.log(err)
+        })
     break
     case'tupleId': 
         if(process.argv.length>3){
@@ -166,7 +224,7 @@ switch(process.argv[2]){
     case'tupleAll':
             whitelist("tupleAll",process.argv[3])
     break
-    default:    
+    default:
         console.log("Usage: node menu.js [options] [arguments]")
         console.log("")
         console.log("Options:")
@@ -178,4 +236,4 @@ switch(process.argv[2]){
         console.log("    errorlog                 Displays the errorlog")
         console.log("    restart                  Restarts system")
         console.log("    shutdown                 Save all data and turn off system")
-}
+    }
