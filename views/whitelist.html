@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Menu for Netgain-esb</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>    
+        <script> var exports = {}; </script>
+        <script src="whiteList.js"></script>
+    </head>
+    <body>
+            <div class="group">
+                <label>Adress:</label>
+                <input type="text" id="adress">
+            </div>
+            <button onclick="buttonClickAdd()" id="Add">Add</button>
+            <button onclick="buttonClickRemove()" id="Remove">Remove</button>
+        <script>
+            function buttonClickAdd(){
+                'use strict'
+                var adress = document.getElementById("adress").value;
+                alert(adress)
+                addWhitelist(adress);
+            }
+            function buttonClickRemove(){
+                var adress = document.getElementById("adress").value;
+                remWhitelist(adress);
+            }
+        </script>
+    </body>
+</html>

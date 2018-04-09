@@ -234,6 +234,5 @@ switch(process.argv[2]){
         console.log("    display                  Active queues")
         console.log("    history                  Display all history")
         console.log("    errorlog                 Displays the errorlog")
-        console.log("    restart                  Restarts system")
         console.log("    shutdown                 Save all data and turn off system")
     }

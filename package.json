@@ -2,7 +2,7 @@
   "name": "exjobbnetgain",
   "version": "1.0.0",
   "description": "Message queue management system",
-  "main": "index.js",
+  "main": "./views/main.js",
   "dependencies": {
     "@moebius/http-graceful-shutdown": "^1.0.1",
     "@types/async": "^2.0.47",
@@ -12,10 +12,14 @@
     "@types/mongoose": "^5.0.7",
     "async": "^2.6.0",
     "axios": "^0.18.0",
+    "bootstrap": "^4.0.0",
+    "commonjs": "0.0.1",
     "express": "^4.16.3",
+    "jquery": "^3.3.1",
     "mongodb": "^3.0.4",
     "mongoose": "^5.0.10",
     "npm": "^5.7.1",
+    "popper.js": "^1.14.2",
     "promise": "^8.0.1",
     "typescript": "^2.7.2",
     "winston": "^3.0.0-rc1",
@@ -25,7 +29,8 @@
     "@types/node": "^9.4.7"
   },
   "scripts": {
-    "test": "runtest"
+    "test": "runtest",
+    "start": "electron ."
   },
   "repository": {
     "type": "git",

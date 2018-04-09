@@ -1,5 +1,5 @@
 import mongoose = require("mongoose");
-import file = require("./file");
+import * as File from "./file";
 import { IDestinationListModel } from "./models/destinationList"
 import { IMsgModel } from "./models/msg"
 import { IQueueListModel } from "./models/queueList"
@@ -14,7 +14,7 @@ interface ICallbackQ{
 }
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(){
-	var File:file = new file();
+
 	var destinationList = mongoose.model("DestinationList");
 	var whitelistAll:Array<[number, string]> = File.getAllLinesAsTuple("whitelist"); //[[2, "hej"], [3, "då"], [5, "sometahing"]]
 	destinationList.update({}, {active: false})

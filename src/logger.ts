@@ -29,7 +29,7 @@ new (require('winston-daily-rotate-file'))({
     level: 'info'
 }),
 new (require('winston-daily-rotate-file'))({
-    filename: './errLog/log',
+    filename: './errLog/errlog',
     timestamp: tsFormat,
     datePattern: 'YYYY-MM-DD',
     prepend: true,

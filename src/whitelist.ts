@@ -1,8 +1,6 @@
 //whitelist.ts
-import File =  require("./file")
+import * as file from './file'
 import {logController} from './logger'
-
-var file = new File
 
 function whitelist(action:string, adress) {
     switch(action){
