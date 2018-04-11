@@ -12,8 +12,10 @@
     "@types/mongoose": "^5.0.7",
     "async": "^2.6.0",
     "axios": "^0.18.0",
+    "bcrypt": "^2.0.0",
     "bootstrap": "^4.0.0",
     "commonjs": "0.0.1",
+    "electron-rebuild": "^1.7.3",
     "express": "^4.16.3",
     "jquery": "^3.3.1",
     "mongodb": "^3.0.4",
@@ -21,6 +23,7 @@
     "npm": "^5.7.1",
     "popper.js": "^1.14.2",
     "promise": "^8.0.1",
+    "requirejs": "^2.3.5",
     "typescript": "^2.7.2",
     "winston": "^3.0.0-rc1",
     "winston-daily-rotate-file": "^2.0.0-rc.2"

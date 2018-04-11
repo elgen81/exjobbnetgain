@@ -7,7 +7,9 @@ import { IDestinationListModel } from "./models/destinationList"
 import { IQueueListModel } from "./models/queueList"
 import repo = require("./dbRepository");
 import {logController} from "./logger"
+import {appendLine, removeLine} from "./file"
 
+var response
 var router = express.Router();
 var Msg = mongoose.model("Msg");
 var DestList = mongoose.model("DestinationList")
@@ -17,6 +19,24 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.get('/getStatus', function(req, res){
         res.status(200).json({Server: 'OK', DBStatus: mongoose.connection.readyState})
 })
+
+router.post('/whitelist/', function(req,res){
+    logController(process.argv[1],req.body,'info')
+    if(req.body.button == "Add"){
+        response=appendLine("whitelist", req.body.adress)
+    }
+    else if(req.body.button == "Remove"){
+        response=removeLine("whitelist",req.body.adress)
+    }
+    else{
+        response=0;
+    }
+});
+
+router.get('/getList', function(req,res){
+    
+})
+
 
 router.post('/shutdown', function(req, res){
     if(req.connection.remoteAddress){
