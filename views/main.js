@@ -1,10 +1,13 @@
 var _a = require('electron'), app = _a.app, BrowserWindow = _a.BrowserWindow;
 var path = require('path');
 var url = require('url');
-var win;
+
 function createWindow() {
     // Create the browser window.
-    win = new BrowserWindow({ width: 1200, height: 800 });
+    win = new BrowserWindow({ 
+        width: 1200, 
+        height: 800
+    });
     // and load the index.html of the app.
     setTimeout(function () {
         win.loadURL(url.format({

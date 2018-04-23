@@ -18,23 +18,26 @@ export function showFile(filename:string){
 }
 
 export function appendLine(filename:string, data:string){
-   // logController(process.argv[1], filename+" "+data, "error")
+   logController(process.argv[1], filename+" "+data, "info")
     filename = filename+'.ini'
     if(fileExists(filename)){
         if(!(dataExists(filename, data))){
             fs.appendFile("./"+filename, '#'+(findLast(filename))+" "+data+"\n", function(err){
             if(err){
-                return console.log(err);
+                return false;
             }
             logController(process.argv[1], data+' added to file '+filename, 'info')
+                return true;
             })
         }
         else{
             logController(process.argv[1], data +'already added', 'info')
+            return false;
         }
     }
     else{
         logController(process.argv[1], 'Error adding to file', 'error', 'Adding lines to .ini')
+        return false;
     }
 }
 
@@ -98,7 +101,15 @@ export function removeLine(filename:string, data:string){
             lastPart = lastPart.slice(last+1)
             var ny = firstPart+lastPart
             fs.writeFileSync("./"+filename, ny, 'utf8')
+            logController(process.argv[1], data +' removed from'+filename, 'info')
+            return true;
         }
+        logController(process.argv[1], data +' adress missing in file', 'info')
+        return false;
+    }
+    else{
+        logController(process.argv[1], 'Error removing from file', 'error', 'removing lines from'+filename)
+    return false;
     }
 }
 export function getLineAsTupleById(filename:string, data:number){
