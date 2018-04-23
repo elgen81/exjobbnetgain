@@ -170,6 +170,7 @@ export function queuePush(destination, msgId, callback?: ICallback){
 export function queuePop(queueId:number, callback?:ICallbackQ){
 	if(!callback){callback = function(){}};
 	var Queue = mongoose.model("QueueList");
+	var Msg = mongoose.model("Msg");
 
 	Queue.findOne({queueId: queueId}, function(err, queue:IQueueListModel){
 		if(err)
@@ -178,12 +179,39 @@ export function queuePop(queueId:number, callback?:ICallbackQ){
 			{ callback(new Error("Could not find queue"), null)}
 		else{
 			console.log(queue)
-			queue.lastSentMsg = queue.msgArray.shift()
-			queue.lengthOfQueue = queue.msgArray.length;
-			queue.save(function(err, queue){
-				if(err){ callback(err, null) }
-				else { callback(null, queue) }
-			})
+			if(queue.msgArray.length <= 0)
+			{
+				callback(new Error("Queue is empty"), null);
+			}
+			else if(queue.lastSentMsg)
+			{
+				Msg.findOne( {_id: queue.lastSentMsg}, function(err, msg:IMsgModel){
+					if(err) {callback(err, null)}
+
+					if(msg.isSent)
+					{
+						queue.lastSentMsg = queue.msgArray.shift()
+						queue.lengthOfQueue = queue.msgArray.length;
+						queue.save(function(err, queue){
+							if(err){ callback(err, null) }
+							else { callback(null, queue) }
+						})
+					}
+					else
+					{
+						callback(null, queue)
+					}
+				})
+			}
+			else
+			{
+				queue.lastSentMsg = queue.msgArray.shift()
+				queue.lengthOfQueue = queue.msgArray.length;
+				queue.save(function(err, queue){
+					if(err){ callback(err, null) }
+					else { callback(null, queue) }
+				})
+			}
 		}
 	})
 }
