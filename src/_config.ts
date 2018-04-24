@@ -11,3 +11,20 @@ config.mongoURI = {
 }
 
 config.port = 8000
+
+config.pam = {
+	user: "pamadmin",
+	password: "pamadmin",
+	pamPort: 8090,
+	pamWSDL: "http://sctest:8090/itpam/soap?wsdl"
+}
+
+config.pamXML = {
+	checkServerStatus: ""
+}
+
+
+config.resend = {
+	delay: 5000,
+	mult: 2
+}
