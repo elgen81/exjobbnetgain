@@ -44,6 +44,7 @@ eventEmitter.on('newOut', (dest) => {
         if (code !== 0) {
           console.log(`output process exited with code ${code}`);
         }
+        outPutProcesses.splice(outPutProcesses.indexOf([dest, out]),1)
         })
       out.on('message', (msg)=>{
         if(msg.msg = "outDone")
@@ -78,7 +79,10 @@ eventEmitter.on("outDone", (id)=>{
   {
     ids.push(outPutProcesses[i][0]);
   }
-  var out = outPutProcesses[ids.indexOf(id)][1];
+  var index = ids.indexOf(id)
+  var out = outPutProcesses[index][1];
   console.log("killing ID: " + id)
   out.kill('SIGINT')
+
+  outPutProcesses.splice(index, 1);
 })

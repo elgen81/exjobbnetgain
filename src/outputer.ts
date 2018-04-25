@@ -66,14 +66,18 @@ export class outputer{
 		if(self.sending)
 		{
 			soapout.checkStatus(function(err, status){
+				console.log(status)
 				if(!err && status)
 					{ 
 						self.sendToReceiver();
 					}
 				else
 				{
-					//set timeout here if needed
-					self.checkReceiver();
+					setTimeout(function(){
+						self.numOfResends = self.numOfResends + 1;
+						//do stuff with resendWaring
+						self.checkReceiver();
+					},self.resendDelay * self.resendMult * self.numOfResends);
 				}
 			})
 		}
@@ -87,6 +91,7 @@ export class outputer{
 			Msg.findOne( {_id: self.queue.lastSentMsg}, function(err, message:IMsgModel){
 				if(err)
 				{
+					self.numOfResends = 0;
 					self.checkReceiver();
 				}
 				else
@@ -94,11 +99,8 @@ export class outputer{
 					soapout.soapSend(message.msg, function(err, status){
 						if(err)
 						{
-							setTimeout(function(){
-								self.numOfResends = self.numOfResends + 1;
-								//do stuff with resendWaring
-								self.checkReceiver();
-							},self.resendDelay * self.resendMult * self.numOfResends);
+							self.numOfResends = 0;
+							self.checkReceiver();
 						}
 						else
 						{	
