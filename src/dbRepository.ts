@@ -12,6 +12,9 @@ interface ICallbackB{
 interface ICallbackQ{
 	( error: Error, result:IQueueListModel ) :void
 }
+interface ICallbackData{
+    (error:Error, status:string) :void
+}
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(){
 
@@ -216,3 +219,33 @@ export function queuePop(queueId:number, callback?:ICallbackQ){
 	})
 }
 
+export function activeMsg(callback?: ICallbackData){
+	var Msg = mongoose.model("Msg");	
+	Msg.find({
+        isSorted: true,
+        isSent: false
+    }).count(function (err, count) {
+        if (err) {
+			logController(process.argv[1], err, "error", process.argv[2]);
+			callback(err,null);
+        }
+        else {
+		callback(null,count.toString())
+		}
+	})	   
+}
+
+export function activeQueues(callback?:ICallbackData){
+	var QueueList = mongoose.model("QueueList");
+	QueueList.find({
+        lengthOfQueue: { $gt: 0 }
+    }).count(function (err, count) {
+        if (err) {
+			logController(process.argv[1], err, "error", process.argv[2]);
+			callback(err,null)
+        }
+        else {
+            callback(null,count.toString())
+        }
+    })
+}

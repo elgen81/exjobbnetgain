@@ -1,4 +1,6 @@
 import { format } from "util";
+var moment = require('moment')
+var timestamp = moment().format('HH:mm:ss');
 
 const winston = require('winston')
 
@@ -43,10 +45,10 @@ export function logController(path:string, err, severity, optional=''){
     path = path.replace(process.cwd(),"")
     switch(severity){
     case'error':
-        logger.error("(%s), Path = %s, More info = %s",err, path,optional)
+        logger.error("%s: (%s), Path = %s, More info = %s",timestamp,err, path,optional)
     break
     case'info':{
-        logger.info("(%s), Path = %s, More info = %s",err, path,optional)
+        logger.info("%s: (%s), Path = %s, More info = %s",timestamp, err, path,optional)
         console.log(err)
         }
     break

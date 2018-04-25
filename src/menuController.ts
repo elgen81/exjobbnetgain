@@ -7,29 +7,98 @@ import { IDestinationListModel } from "./models/destinationList"
 import { IQueueListModel } from "./models/queueList"
 import repo = require("./dbRepository");
 import {logController} from "./logger"
-import {appendLine, removeLine} from "./file"
+import {appendLine, removeLine, showFile, fileToString} from "./file"
+
 
 var response
 var router = express.Router();
-var Msg = mongoose.model("Msg");
-var DestList = mongoose.model("DestinationList")
-var Queue = mongoose.model("QueueList")
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.get('/getStatus', function(req, res){
-        res.status(200).json({Server: 'OK', DBStatus: mongoose.connection.readyState})
+    res.status(200).json({Server: 'OK', DBStatus: mongoose.connection.readyState})
 })
 
-router.post('/whitelist/', function(req,res){
-    logController(process.argv[1],req.body,'info')
-    if(req.body.button == "Add"){
-        response=appendLine("whitelist", req.body.adress)
-    }
-    else if(req.body.button == "Remove"){
-        response=removeLine("whitelist",req.body.adress)
+router.get('/servDbStatus', function(req,res){
+    req.body.statusS = mongoose.connection.readyState.toString();
+    if(req.body.statusS != '0'){
+        repo.activeQueues(function(err,activeQueues){
+            if(err){
+                req.body.statusQ = "N/A";
+            }
+            else{
+                req.body.statusQ = activeQueues;
+            }
+            repo.activeMsg(function(err,activMsg){
+                if(err){
+                    req.body.statusQ = "N/A";
+                }
+                else{
+                    req.body.statusP = activMsg;
+                    
+                }
+            res.status(200).send(req.body)
+            })
+        })
     }
     else{
-        response=0;
+        req.body.statusP="N/A";
+        req.body.statusQ="N/A";
+        req.body.statusS="N/A";
+        res.status(500).send(req.body);
+    }
+})
+
+router.post('/errorLog', function(req,res){
+    var adress = (process.argv[1]).slice(0, process.argv[1].lastIndexOf("/")+1) 
+    logController(process.argv[1], "Sent to errorlog"+req.body, 'info')
+    fileToString(adress+"../errLog/"+"errlog."+req.body.date, function(err,status){
+        if(!err){
+            res.status(200).send(status)
+        }
+        else{
+            res.status(500).send(err.message)  
+        }    
+    })
+})
+
+router.post('/Log', function(req,res){
+    var adress = (process.argv[1]).slice(0, process.argv[1].lastIndexOf("/")+1) 
+    logController(process.argv[1], "Sent to errorlog"+req.body, 'info')
+    fileToString(adress+"../log/"+"log."+req.body.date, function(err,status){
+        if(!err){
+            res.status(200).send(status)
+        }
+        else{
+            res.status(500).send(err.message)  
+        }    
+    })
+})
+
+router.post('/whitelist', function(req,res){
+    logController(process.argv[1],req.body,'info')
+
+    if(req.body.button == "Add"){
+        appendLine("whitelist", req.body.adress,function(err,status){
+            if(status){
+                res.status(200).send(req.body.adress+" added")
+            } 
+            else{
+                res.status(500).send(err.message)
+            }  
+        })   
+    }
+    else if(req.body.button == "Remove"){
+        removeLine("whitelist",req.body.adress,function(err, status){
+            if(status){
+                res.status(200).send(req.body.adress+" removed")
+            }
+            else{
+                res.status(500).send(err.message)
+            }    
+        })
+    }
+    else{
+        res.status(400).send("Server error")
     }
 });
 

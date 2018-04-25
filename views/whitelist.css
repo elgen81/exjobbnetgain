@@ -1,0 +1,10 @@
+input[type="text"]:invalid {
+    border: 2px solid red;
+  }
+  
+  input[type="text"]:valid {
+    border: 2px solid greenyellow;
+  }
+input[type="text"]:selection {
+    border: none;
+}

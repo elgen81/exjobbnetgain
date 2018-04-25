@@ -1,28 +1,71 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Menu for Netgain-esb</title>
+        <title>Whitelist Netgain-esb</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="whitelist.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>    
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>   
         <script> var exports = {}; </script>
+        <script>
+            window.onload=function() {
+                $('#forms input[type="submit"]').click(function(e){
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    var regex1=/\w+\.\w+\.\w+\:\d+$/g;
+                    var regex2=/\d+\.\d+\.\d+\.\d+\:\d+$/g;
+                    var data = {};
+                    data.adress = $("#forms input[name=adress]").val();
+                    var test = regex1.test(data.adress);
+                    var test2 = regex2.test(data.adress);
+                    data.button = $(this).attr('id');
+                    if(test|test2){
+                        $.ajax({
+                            url : 'http://localhost:8000/menu/whitelist',
+                            type : 'POST',
+                            data : data,
+                            success : function(data,textStatus, jqXHR){
+                                document.getElementById('result').innerText = data;
+                                document.getElementById('result').style.color = "green";
+                                document.getElementById('textfile').src = "../whitelist.ini"
+                                
+                            },
+                            error : function(jqXHR,textStatus, errorThrown){
+                                document.getElementById('result').innerText = jqXHR.responseText;
+                                document.getElementById('result').style.color = "red";
+                                document.getElementById('textfile').src = "../whitelist.ini"
+                            } 
+                        })
+                    }
+                    else{
+                        document.getElementById('result').innerText = "Wrong format";
+                        document.getElementById('result').style.color ="red";
+                    }
+                return 0;    
+                });
+            }
+        </script>
     </head>
     <body>
         <br>
-        <form action="http://localhost:8000/menu/whiteList/" method="post">
+        <form id="forms">
             <fieldset>
-            Adress <input type="text" name="adress"><br>
+            Adress <input type="text" name="adress" id="adress" pattern="(\w+.\w+.\w+:\d+$)|(\d+.\d+.\d+.\d:\d+$)" required>
+            <div id=adress2></div>
+            <div id="test"></div>
+            <p></p>
                 <input type="submit" name="button" class="btn btn-primary" value="Add" id="Add">
                 <input type="submit" name="button" class="btn btn-primary" value="Remove" id="Remove">
             </fieldset>
             <br>
-                <div type="text" id="response" border="1"></div>
         </form>
+        <div id="result"></div>
+        <div id="result2"></div>
         <br>
-        <iframe id="textfile" src="../whitelist.ini"></iframe>
-        <script type="text/javascript">
-        </script>
+        <iframe style="border: none; width: 100%; height:250px; overflow:auto;" scrolling="auto" id="textfile" src="../whitelist.ini"></iframe>
+        
     </body>
 </html>
