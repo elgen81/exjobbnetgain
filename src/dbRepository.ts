@@ -15,6 +15,9 @@ interface ICallbackQ{
 interface ICallbackData{
     (error:Error, status:string) :void
 }
+interface ICallbackAny{
+    (error:Error, status:any[]) :void
+}
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(){
 
@@ -248,4 +251,24 @@ export function activeQueues(callback?:ICallbackData){
             callback(null,count.toString())
         }
     })
+}
+
+export function listActive(callback?:ICallbackAny){
+	var Msg = mongoose.model("Msg");
+	Msg.aggregate([
+		{$match:{'isSorted':true,'isSent':false}
+		},
+		{$project: {"_id" : false, queueId : 1,
+		sender : 1,receiver : 1, timeReceived : 1}
+		}
+		]).exec(function(err,data){
+			if(err){
+				logController(process.argv[1], err, "error", process.argv[2]);
+				callback(err,null)
+			}
+			else{
+				logController(process.argv[1], data, "info");
+				callback(null,data)
+			}
+		})
 }

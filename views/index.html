@@ -25,6 +25,10 @@
         function errorLog(){
             document.getElementById("main").innerHTML = '<object type="text/html" data="errorLog.html" width="100%" height="600" border=0 ></object>';
         }
+
+        function currCue(){
+            document.getElementById("main").innerHTML = '<object type="text/html" data="currcue.html" width="100%" height="600" border=0 ></object>';
+        }
     
         function getData(){
             var data={};
@@ -81,6 +85,7 @@
                     <img src="netgain.png" height="27px"></img>
                     <div class="btn-group btn-group-lg" role="group">
                         <button type="button" class="btn btn-basic btn-lg" onclick="whitelist()">Whitelist</button>
+                        <button type="button" class="btn btn-basic btn-lg" onclick="currCue()">current Cueue</button>
                         <button type="button" class="btn btn-basic btn-lg" onclick="log()">Log</button>
                         <button type="button" class="btn btn-basic btn-lg" onclick="errorLog()">Errorlog</button>
                         <button type="button" class="btn btn-basic btn-lg">Statistics</button> 

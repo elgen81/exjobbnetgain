@@ -18,6 +18,21 @@ router.get('/getStatus', function(req, res){
     res.status(200).json({Server: 'OK', DBStatus: mongoose.connection.readyState})
 })
 
+router.get('/listActive', function(req,res){
+    repo.listActive(function(err,listActive){
+        logController(process.argv[1], listActive, "info");
+        if(err){
+            req.body = "Nothing in queue";
+        }
+        else{
+            logController(process.argv[1], listActive, "info");
+            req.body = listActive;
+        }
+        res.status(200).send(req.body)
+    })
+    
+})
+
 router.get('/servDbStatus', function(req,res){
     req.body.statusS = mongoose.connection.readyState.toString();
     if(req.body.statusS != '0'){
