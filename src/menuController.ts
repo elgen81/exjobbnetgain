@@ -7,7 +7,7 @@ import { IDestinationListModel } from "./models/destinationList"
 import { IQueueListModel } from "./models/queueList"
 import repo = require("./dbRepository");
 import {logController} from "./logger"
-import {appendLine, removeLine, showFile, fileToString} from "./file"
+import {appendLine, removeLine, fileToString} from "./file"
 
 
 var response

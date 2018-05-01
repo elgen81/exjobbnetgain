@@ -12,18 +12,6 @@ interface ICallbackData{
     (error:Error, status:string) :void
 }
 
-//var fs = require('fs')
-
-export function showFile(filename:string){
-    fs.readFile("./"+filename+".ini", function (err, data){
-        if(err){
-            logController(process.argv[1], err, 'error')
-            return console.log(filename+".ini is empty")
-        }
-    console.log(data.toString());
-    });
-}
-
 export function fileToString(filename:string,callback?: ICallbackData){
     logController(process.argv[1], "Converting "+filename, "info")
     if(!callback){callback = function(){}};
@@ -41,7 +29,7 @@ export function fileToString(filename:string,callback?: ICallbackData){
     }
     else{
          logController(process.argv[1], 'File does not exist', 'error', 'Printing file content')
-         callback(new Error("File does not exist"),"")
+         callback(new Error("File does not exist")," ")
      }
  }
 
