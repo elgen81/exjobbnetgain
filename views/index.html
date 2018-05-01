@@ -12,24 +12,45 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <link href="style.css" rel="stylesheet">
-        <script>
-               
-        function whitelist(){
-            document.getElementById("main").innerHTML = '<object type="text/html" data="whitelist.html" width="100%" height="600" border=0 ></object>';
-        }
+        <script>    
+        window.onload=getData;
+        setInterval(getData(),60000);   
+        $(document).ready(function(){
+            $("#load_home").on("click", function(){
+                $("#main").load("start.html");
+            });
+        });
         
-        function log(){
-            document.getElementById("main").innerHTML = '<object type="text/html" data="log.html" width="100%" height="600" border=0 ></object>';
-        }
-         
-        function errorLog(){
-            document.getElementById("main").innerHTML = '<object type="text/html" data="errorLog.html" width="100%" height="600" border=0 ></object>';
-        }
+        $(document).ready(function(){
+            $("#load_whitelist").on("click", function(){
+                $("#main").load("whitelist.html");
+            });
+        });
 
-        function currCue(){
-            document.getElementById("main").innerHTML = '<object type="text/html" data="currcue.html" width="100%" height="600" border=0 ></object>';
-        }
-    
+        $(document).ready(function(){
+            $("#load_currCue").on("click", function(){
+                $("#main").load("currcue.html");
+            });
+        });
+        
+        $(document).ready(function(){
+            $("#load_log").on("click", function(){
+                $("#main").load("log.html");
+            });
+        });
+
+        $(document).ready(function(){
+            $("#load_errorLog").on("click", function(){
+                $("#main").load("errorLog.html");
+            });
+        });
+
+        $(document).ready(function(){
+            $("#load_statistics").on("click", function(){
+                $("#main").load("statistics.html");
+            });
+        });
+
         function getData(){
             var data={};
             data.statusS = "n/a";
@@ -75,40 +96,34 @@
             })    
         }            
     </script> 
-    <script>window.onload=getData;</script>
-    <script>setInterval(getData(),60000); </script>
     </head>
     <body>
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <img src="netgain.png" height="27px"></img>
-                    <div class="btn-group btn-group-lg" role="group">
-                        <button type="button" class="btn btn-basic btn-lg" onclick="whitelist()">Whitelist</button>
-                        <button type="button" class="btn btn-basic btn-lg" onclick="currCue()">current Cueue</button>
-                        <button type="button" class="btn btn-basic btn-lg" onclick="log()">Log</button>
-                        <button type="button" class="btn btn-basic btn-lg" onclick="errorLog()">Errorlog</button>
-                        <button type="button" class="btn btn-basic btn-lg">Statistics</button> 
+        <nav class="navbar navbar-expand-lg navbar-light navbar-fixed-top">
+                <a class="navbar-brand" id="load_home">
+                    <img src="netgain.png" height="27px"></img></a>
+                    <div class= "collapse navbar-collapse" id="navbarText">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="btn-group btn-group-lg" role="group">
+                                <button type="button" class="btn btn-basic btn-lg" id="load_whitelist" >Whitelist</button>
+                                <button type="button" class="btn btn-basic btn-lg" id="load_currCue" >current Cueue</button>
+                                <button type="button" class="btn btn-basic btn-lg" id="load_log" >Log</button>
+                                <button type="button" class="btn btn-basic btn-lg" id="load_errorLog" >Errorlog</button>
+                                <button type="button" class="btn btn-basic btn-lg"  disabled id="load_statistics" >Statistics</button> 
+                            </li>
+                        </ul>
+                    <span class="navbar-text">        
+                        | Server status: <span id="statusS"></span>
+                        | Active queues: <span id="statusQ"></span>
+                        | Packets in queues: <span id="statusP"></span>
+                        | <button class="glyphicon glyphicon-refresh" onclick="getData()"></button>
+                    </span>
                     </div>
                 </div>
             </div>
         </nav>
-        <main role="main" class="container" id="main">
-            <H1 class="mt-5">Welcome to the Netgain-esb</H1>
-            <p class="lead">This is an adminpage for the Netgain-esb</p>
-            <p>We hope this will help you!</p>
+        <main role="main" class="container" id="main" >
+            <script>$("#main").load("start.html");</script> 
         </main>
-
-        <footer class="footer">
-            <div class="container">
-                <p class="text-muted">        
-                | Server status: <span id="statusS"></span>
-                | Active queues: <span id="statusQ"></span>
-                | Packets in queues: <span id="statusP"></span>
-                | <button class="glyphicon glyphicon-refresh" onclick="getData()"></button>
-                </p>
-            </div>
-        </footer>
     </body>
 </html>
 

@@ -27,7 +27,6 @@
         </script>
         <script>
              function CreateTableFromJSON(data) {
-
         // EXTRACT VALUE FOR HTML HEADER. 
         var col = [];
         for (var i = 0; i < data.length; i++) {
@@ -63,14 +62,18 @@
         }
 
         // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
-        var divContainer = document.getElementById("result");
-        divContainer.innerHTML = "";
-        divContainer.appendChild(table);
+        document.getElementById("result").innerHTML = "";
+        document.getElementById("result").appendChild(table);
     }
         </script>
     </head>
     <body>
-        <div id="result"></div>
+        <div class="container">
+            <h1 class="mt-5">Current queues</h1>
+            <p class="lead">Displays currently active cueues and the elements in them</p>
+        </div>
+        <div id="test" class="container"></div>
+        <div id="result" class="container"></div>
         <div><button class="glyphicon glyphicon-refresh" onclick="getLatestQueue()"></button> </div>  
     </body>
 </html>

@@ -9,52 +9,68 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>   
-        <script> var exports = {}; </script>
         <script>
-            window.onload=function() {
-                $('#forms input[type="submit"]').click(function(e){
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    var regex1=/\w+\.\w+\.\w+\:\d+$/g;
-                    var regex2=/\d+\.\d+\.\d+\.\d+\:\d+$/g;
-                    var data = {};
-                    data.adress = $("#forms input[name=adress]").val();
-                    var test = regex1.test(data.adress);
-                    var test2 = regex2.test(data.adress);
-                    data.button = $(this).attr('id');
-                    if(test|test2){
-                        $.ajax({
-                            url : 'http://localhost:8000/menu/whitelist',
-                            type : 'POST',
-                            data : data,
-                            success : function(data,textStatus, jqXHR){
-                                document.getElementById('result').innerText = data;
-                                document.getElementById('result').style.color = "green";
-                                document.getElementById('textfile').src = "../whitelist.ini"
-                                
-                            },
-                            error : function(jqXHR,textStatus, errorThrown){
-                                document.getElementById('result').innerText = jqXHR.responseText;
-                                document.getElementById('result').style.color = "red";
-                                document.getElementById('textfile').src = "../whitelist.ini"
-                            } 
-                        })
+            $('#forms input[type="submit"]').click(function(e){
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                var regex1=/\w+\.\w+\.\w+\:\d+$/g;
+                var regex2=/\d+\.\d+\.\d+\.\d+\:\d+$/g;
+                var adress = $("#forms input[name=adress]").val();
+                var test = regex1.test(adress);
+                var test2 = regex2.test(adress);
+                var button = $(this).attr('id');
+                if(test|test2){
+                    send(adress,button);
+                }
+                else{
+                    document.getElementById('result').innerText = "Wrong format";
+                    document.getElementById('result').style.color ="red";
+                }    
+            });
+            function send(adress, button){
+                data = {};
+                data.adress = adress;
+                data.button = button;
+                $.ajax({
+                    url : 'http://localhost:8000/menu/whitelist',
+                    type : 'POST',
+                    data : data,
+                    success : function(data,textStatus, jqXHR){
+                        getWhite();
+                        document.getElementById('result').innerText = data;
+                        document.getElementById('result').style.color = "green";                             
+                    },
+                    error : function(jqXHR,textStatus, errorThrown){
+                        getWhite();
+                        document.getElementById('result').innerText = jqXHR.responseText;
+                        document.getElementById('result').style.color = "red";
                     }
-                    else{
-                        document.getElementById('result').innerText = "Wrong format";
-                        document.getElementById('result').style.color ="red";
+                })
+            }
+            function getWhite(){
+                $.ajax({
+                    url: 'http://localhost:8000/menu/whitelistini',
+                    type: 'GET',
+                    success: function(dator,textStatus,jqXHR){
+                        document.getElementById('text').innerText = dator;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        document.getElementById('text').innerText = jqXHR.response;    
                     }
-                return 0;    
-                });
+                })
             }
         </script>
+        <script> var exports = {}; </script>
     </head>
     <body>
-        <br>
+        <div class= "container">
+        <h1 class="mt-5">Whitelist management</h1>
+        <p class="lead">Add or remove an adress to the whitelist (accepted recievers)</p>
+    </div>
         <form id="forms">
             <fieldset>
             Adress <input type="text" name="adress" id="adress" pattern="(\w+.\w+.\w+:\d+$)|(\d+.\d+.\d+.\d:\d+$)" required>
-            <div id=adress2></div>
+            <div id="adress2"></div>
             <div id="test"></div>
             <p></p>
                 <input type="submit" name="button" class="btn btn-primary" value="Add" id="Add">
@@ -62,10 +78,10 @@
             </fieldset>
             <br>
         </form>
-        <div id="result"></div>
-        <div id="result2"></div>
         <br>
-        <iframe style="border: none; width: 100%; height:250px; overflow:auto;" scrolling="auto" id="textfile" src="../whitelist.ini"></iframe>
-        
+        <div id="result"></div>
+        <div id="text">
+        <script>getWhite()</script>
+        </div>
     </body>
 </html>

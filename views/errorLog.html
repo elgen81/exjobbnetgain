@@ -11,42 +11,59 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>   
         <script> var exports = {}; </script>
         <script>
-            window.onload=function() {
                 $('#forms input[type="submit"]').click(function(e){
                     e.preventDefault();
                     e.stopImmediatePropagation();
-                    var data = {};
-                    data.date = $("#forms input[name=date]").val();
-                    $.ajax({
-                        url: 'http://localhost:8000/menu/errorLog',
-                        type: 'POST',
-                        data: data,
-                        success: function(data,textStatus,jqXHR){
-                            document.getElementById('result').innerText = data;
-                            document.getElementById('result').style.border = "1";
-                        },
-                        error: function(jqXHR, textStatus, errorThrown){
-                            document.getElementById('result').innerText = jqXHR.response;
-                            document.getElementById('result').style.color = "red";
-                        }
-                    })
-                return 0;    
+                    var date = $("#forms input[name=date]").val();
+                    send(date);
+                    return 0;
                 });
+            function send(date){
+                var data = {};
+                data.date = date;
+                $.ajax({
+                    url: 'http://localhost:8000/menu/errorLog',
+                    type: 'POST',
+                    data: data,
+                    success: function(dator,textStatus,jqXHR){
+                        document.getElementById('viewing').innerText = "You are viewing logfile for "+data.date;
+                        document.getElementById('result').innerText = dator;
+                        document.getElementById('result').style.border = "1";
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        document.getElementById('result').innerText = jqXHR.response;
+                        document.getElementById('result').style.color = "red";
+                    }
+                })
             }
-        </script>
-        <script>
         </script>
     </head>
     <body>
-        <br>
+        <div class="container">
+            <h1 class="mt-5">Error log</h1>
+            <p class="lead">Displays the errorlog where all errors or misstypings catched are stored</p>
+            <p class="lead" id="viewing"></p>
+        
         <form id="forms">
             <fieldset>
             Date <input type="date" data-date-format="YYYY-MM-DD" name="date" id="date" pattern="(\d{4}-\d{2}-\d{2}$)" required>
-                <input type="submit" name="button" class="btn btn-primary" value="Add" id="Add">
+                <input type="submit" name="button" class="btn btn-primary" value="Get Error-logfile" id="Add">
             </fieldset>
             <br>
         </form>
-        <div id="result"></div>
-        <br>        
+        </div>
+        <div id="result">
+            <script>
+                var d = new Date();
+                var year = Number(d.getFullYear());
+                var day = Number(d.getDate());
+                var month = Number(d.getMonth());
+                month= month+1;
+                if(day<10){day="0"+day;}
+                if(month<10){month="0"+month}                
+                date = year+"-"+month+"-"+day;
+                send(date);
+            </script>
+            </div>        
     </body>
 </html>

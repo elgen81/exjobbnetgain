@@ -20,15 +20,25 @@ router.get('/getStatus', function(req, res){
 
 router.get('/listActive', function(req,res){
     repo.listActive(function(err,listActive){
-        logController(process.argv[1], listActive, "info");
         if(err){
             req.body = "Nothing in queue";
         }
         else{
-            logController(process.argv[1], listActive, "info");
             req.body = listActive;
         }
         res.status(200).send(req.body)
+    })
+    
+})
+router.get('/whitelistini', function(req,res){
+    var adress = (process.argv[1]).slice(0, process.argv[1].lastIndexOf("/")+1)
+    fileToString(adress+"../whitelist.ini",function(err,whitelist){
+        if(err){
+            res.status(500).send(err.message);
+        }
+        else{
+            res.status(200).send(whitelist);
+        }
     })
     
 })

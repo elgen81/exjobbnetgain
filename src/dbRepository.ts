@@ -267,7 +267,7 @@ export function listActive(callback?:ICallbackAny){
 				callback(err,null)
 			}
 			else{
-				logController(process.argv[1], data, "info");
+				logController(process.argv[1], "Sending Active List to frontend" , "info");
 				callback(null,data)
 			}
 		})

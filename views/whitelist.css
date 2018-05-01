@@ -10,11 +10,16 @@ input[type="text"]:selection {
 }
 table, th, td 
   {
-      margin:10px 0;
+      margin:10px 2px;
       border:solid 1px #333;
-      padding:2px 4px;
-      font:15px Verdana;
+      padding:15px 15px 15px 15px;
+      font:25px ;
   }
+table
+    {
+      width: 100%
+    }
   th {
       font-weight:bold;
+      font-variant-caps: titling-caps;
   }
