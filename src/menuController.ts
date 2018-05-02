@@ -103,7 +103,7 @@ router.post('/whitelist', function(req,res){
     logController(process.argv[1],req.body,'info')
 
     if(req.body.button == "Add"){
-        appendLine("whitelist", req.body.adress,function(err,status){
+        appendLine("whitelist.ini", req.body.adress,function(err,status){
             if(status){
                 res.status(200).send(req.body.adress+" added")
             } 
@@ -113,7 +113,7 @@ router.post('/whitelist', function(req,res){
         })   
     }
     else if(req.body.button == "Remove"){
-        removeLine("whitelist",req.body.adress,function(err, status){
+        removeLine("whitelist.ini",req.body.adress,function(err, status){
             if(status){
                 res.status(200).send(req.body.adress+" removed")
             }

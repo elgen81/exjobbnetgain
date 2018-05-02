@@ -33,27 +33,37 @@ export function fileToString(filename:string,callback?: ICallbackData){
      }
  }
 
- export function exists(filename:string){
-    var exists = fs.existsSync(filename)
-    if(!exists){
-        logController(process.argv[1], filename+ ' does not exists', 'info')
-        return 0;    
-    }
-    else{
-        return 1
-    }       
+ function exists(filename:string){
+    fs.exists(filename,function(exists){
+        if(!exists){
+            logController(process.argv[1], filename+ ' does not exist', 'info')
+            return 0;    
+        }
+        else{
+            return 1
+        }     
+    })
+      
 }
 
 export function appendLine(filename:string, data:string, callback?: ICallback){
    logController(process.argv[1], filename+" "+data, "info")
-    filename = filename+'.ini'
     if(!callback){callback = function(){}};
-    if(fileExists(filename)){
-        if(!(dataExists(filename, data))){
-            fs.appendFile("./"+filename, '#'+(findLast(filename))+" "+data+"\n", function(err){
-            if(err){
-                logController(process.argv[1], err, 'error', "Problem with appendFile")
-                callback(err, false);
+    fileExists(filename,function(err,status){
+        if(!status){
+            callback(err,false)
+        }
+        else{
+            dataExists(filename, data,function(err,status){
+                if(!status){
+                    logController(process.argv[1], err, 'error', "Data does not exist")
+                    callback(err,false)
+                }
+                else{
+                    fs.appendFile("./"+filename, '#'+(findLast(filename))+" "+data+"\n", function(err){
+                        if(err){
+                        logController(process.argv[1], err, 'error', "Problem with appendFile")
+                        allback(err, false);
             }
             logController(process.argv[1], data+' added to file '+filename, 'info')
                 callback(null,true);
@@ -63,6 +73,9 @@ export function appendLine(filename:string, data:string, callback?: ICallback){
             logController(process.argv[1], data +' already added', 'info')
             callback(new Error("Already Added"), false)
         }
+    })
+
+        
     }
     else{
         logController(process.argv[1], 'Error adding to file', 'error', 'Adding lines to .ini')
@@ -70,37 +83,36 @@ export function appendLine(filename:string, data:string, callback?: ICallback){
     }
 }
 
-export function fileExists(filename:string){
-    var exists = fs.existsSync(filename)
+export function fileExists(filename:string,callback?:ICallback){
+    fs.exists(filename,function(exists){
         if(!exists){
             logController(process.argv[1], filename+ ' does not exists, creating it', 'info')
-            var res = createFile('./'+filename)
-            if(!res){
-                return 0
-            }
+            fs.writeFile('filename','',function(test){
+                if(!test){
+                    callback(new Error("Couldn't create "+filename), false);
+                }
+            callback(null,true)
+            })    
         }
-    return 1       
+        else{
+            callback(null,true)
+        }
+    })
 }
 
-export function createFile(filename:string){
-    var err = fs.writeFileSync(filename,'')
-    if(err){
-        logController(process.argv[1], 'Error crating file', 'error', "CreateFile")
-        console.log("Error creating File")
-        return 0
-    }
-    return 1
-}
-
-export function dataExists(filename:string, data){
-    var contents = fs.readFileSync("./"+filename, 'utf8')
+function dataExists(filename:string, data, callback?:ICallback){
+    fs.readFile("./"+filename, 'utf8', function(err,data){
+        if(err){
+            
+        }
+    })
     var exists = contents.lastIndexOf(data)
     if(exists == -1)
         return 0
     else
         return 1  
 }
-export function findLast(filename:string):number{
+function findLast(filename:string):number{
     var contents = fs.readFileSync("./"+filename, 'utf8')
     var last = contents.lastIndexOf('#') 
     contents = contents.slice(last)
@@ -116,9 +128,8 @@ export function findLast(filename:string):number{
         return final
 }
 export function removeLine(filename:string, data:string,callback?:ICallback){
-    filename = filename+".ini"
     if(!callback){callback = function(){}};
-    if(fileExists(filename)){
+    if(exists(filename)){
         if((dataExists(filename, data))){
             var contents = fs.readFileSync("./"+filename, 'utf8')
             var first = contents.lastIndexOf(data)
@@ -135,13 +146,13 @@ export function removeLine(filename:string, data:string,callback?:ICallback){
             callback(null,true);
         }
         else{
-        logController(process.argv[1], data +' adress missing in file', 'info')
+        logController(process.argv[1], data +' adress missing in '+filename, 'info')
         callback(new Error(data+" not in list"),false)
         }
     }
     else{
         logController(process.argv[1], 'Error removing from file', 'error', 'removing lines from'+filename)
-        callback(new Error("Whitelist.ini is empty"),false);
+        callback(new Error(filename+" does not exist"),false);
     }
 }
 export function getLineAsTupleById(filename:string, data:number){

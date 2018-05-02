@@ -9,7 +9,8 @@ function createWindow() {
         height: 900,
         webPreferences: {
             nodeIntegration: false
-        }
+        },
+        icon: path.join(__dirname,'netgain.png')
         
     });
     // and load the index.html of the app.
