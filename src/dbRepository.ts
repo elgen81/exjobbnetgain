@@ -20,37 +20,40 @@ interface ICallbackAny{
 }
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(){
-
 	var destinationList = mongoose.model("DestinationList");
-	var whitelistAll:Array<[number, string]> = File.getAllLinesAsTuple("whitelist"); //[[2, "hej"], [3, "då"], [5, "sometahing"]]
-	destinationList.update({}, {active: false})
-	var destinationListAll = destinationList.find({});
+	File.getAllLinesAsTuple("whitelist.ini",function(err,whitelistAll:Array<[number, string]>){ //[[2, "hej"], [3, "då"], [5, "sometahing"]]
+		if(!err){
+			destinationList.update({}, {active: false})
+			var destinationListAll = destinationList.find({});
 
-	for(let entry of whitelistAll){
-	  destinationList.count({queueId: entry[0]} && {destination: entry[1]}, function(err, count){
-	    if(count > 0)
-	    {
-		  destinationList.update({ queueId: entry[0]} && {destination: entry[1]}, {active: true});
-		  logController(process.argv[1], entry+ ' now active.', "info")
-	    }
-	    else
-	    {
-	      var newDestination = new destinationList({
-	        queueId: entry[0],
-	        destination: entry[1],
-	        active: true
-	      });
-	      newDestination.save(function(err){
-	      if(err){ 
-				logController(process.argv[1], 'Error adding new destination', "error", "New Destination")
+			for(let entry of whitelistAll){
+				destinationList.count({queueId: entry[0]} && {destination: entry[1]}, function(err, count){
+					if(count > 0){
+						destinationList.update({ queueId: entry[0]} && {destination: entry[1]}, {active: true});
+						logController(process.argv[1], entry+ ' now active.', "info")
+					}
+					else{
+						var newDestination = new destinationList({
+							queueId: entry[0],
+							destination: entry[1],
+							active: true
+						});
+						newDestination.save(function(err){
+							if(err){ 
+								logController(process.argv[1], 'Error adding new destination', "error", "New Destination")
+							}
+							else{ 
+								logController(process.argv[1], "New destination added: " + entry[0].toString +" "+ entry[1], "info")
+							}
+						});
+					}
+				})
 			}
-	      else{ 
-				logController(process.argv[1], "New destination added: " + entry[0].toString +" "+ entry[1], "info")
-			}
-	      });
-	    }
-	  });
-	}
+		}
+		else{
+			logController(process.argv[1], err, "error")
+		}
+	})
 }
 
 export function doesQueueExists(destination, callback?:ICallbackB):void{
@@ -72,7 +75,6 @@ export function doesQueueExists(destination, callback?:ICallbackB):void{
 		}
 	})
 }
-
 
 export function startNewQueue():boolean{
 	return false;
