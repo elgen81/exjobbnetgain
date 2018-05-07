@@ -52,7 +52,6 @@ export function exists(filename:string, callback?: ICallback){
 }
 
 export function appendLine(filename:string, data:string, callback?: ICallback){
-   logController(process.argv[1], filename+" "+data, "info")
     if(!callback){callback = function(){}};
     fileExists(filename,function(err,status){
         if(err){
@@ -112,9 +111,8 @@ function dataExists(filename:string, data, callback?:ICallback){
 
 function findLast(filename:string,callback?:ICallbackNumber){
     fs.readFile(filename, 'utf8',function(err,contents){
-        logController(process.argv[1],contents,'info')
         if(err){
-            logController(process.argv[1],err,'info')
+            logController(process.argv[1],err,'error')
         }
         else{
             var last = contents.lastIndexOf('#') 
