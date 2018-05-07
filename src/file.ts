@@ -55,25 +55,26 @@ export function appendLine(filename:string, data:string, callback?: ICallback){
    logController(process.argv[1], filename+" "+data, "info")
     if(!callback){callback = function(){}};
     fileExists(filename,function(err,status){
-        if(!status){
+        if(err){
             callback(err,false)
         }
         else{
             dataExists(filename, data,function(err,status){
-                if(!status){
-                    logController(process.argv[1], err, 'error', "Data does not exist")
+                if(status){
+                    logController(process.argv[1], err, 'error')
                     callback(err,false)
                 }
                 else{
-                    fs.appendFile("./"+filename, '#'+(findLast(filename))+" "+data+"\n", function(err){
-                        if(err){
-                            logController(process.argv[1], err, 'error', "Problem with appendFile")
-                            callback(err, false);
-                        }
-                        else{
-                            logController(process.argv[1], 'Error adding to file', 'error', 'Adding lines to .ini')
-                            callback(new Error("Error adding to file"),false)
-                        }
+                    findLast(filename,function(err,position){
+                        fs.appendFile(filename, '#'+position+" "+data+"\n", function(err){
+                            if(err){
+                                logController(process.argv[1], err, 'error', "Problem with appendFile")
+                                callback(err, false);
+                            }
+                            else{
+                                callback(null,true)
+                            }
+                        })
                     })
                 }
             })
@@ -81,19 +82,10 @@ export function appendLine(filename:string, data:string, callback?: ICallback){
     })
 }
 
-export function fileExists(filename:string,callback?:ICallback){
-    fs.open(filename,'r',function(err,file){
+export function fileExists(filename:string, callback?:ICallback){
+    fs.open(filename,'a+',function(err,file){
         if(err){
-            logController(process.argv[1], filename+ ' does not exists, creating it', 'info')
-            fs.writeFile('filename','',function(err){
-                if(err){
-                    logController(process.argv[1], err,'info');
-                    callback(new Error("Couldn't create "+filename), false);
-                }
-                else{
-                    callback(null,true)
-                }
-            })    
+            logController(process.argv[1],"couldn't open "+filename,'error')
         }
         else{
             callback(null,true);
@@ -102,9 +94,9 @@ export function fileExists(filename:string,callback?:ICallback){
 }
 
 function dataExists(filename:string, data, callback?:ICallback){
-    fs.readFile("./"+filename, 'utf8', function(err,file){
+    fs.readFile(filename, 'utf8', function(err,file){
         if(err){
-            callback(err,false);
+            callback(new Error("could not read "+filename),false);
         }
         else{
             var exists = file.lastIndexOf(data)
@@ -112,25 +104,32 @@ function dataExists(filename:string, data, callback?:ICallback){
                 callback(null, false)
             }
             else{
-                callback(null, true)
+                callback(new Error("The line is already in "+filename), true)
             }
         }
     })
 }
 
 function findLast(filename:string,callback?:ICallbackNumber){
-    var contents = fs.readFile("./"+filename, 'utf8',function(err,contents){
-        var last = contents.lastIndexOf('#') 
-        contents = contents.slice(last)
-        if(last!=-1){
-            last = contents.lastIndexOf('#')
-            var laster = contents.lastIndexOf(' ')
-            contents = contents.slice(last+1,laster)
-            var final = Number(contents)
-            callback(null,final+1)
+    fs.readFile(filename, 'utf8',function(err,contents){
+        logController(process.argv[1],contents,'info')
+        if(err){
+            logController(process.argv[1],err,'info')
         }
         else{
-            callback(null,1)
+            var last = contents.lastIndexOf('#') 
+            contents = contents.slice(last)
+            if(last!=-1){
+                last = contents.lastIndexOf('#')
+                var laster = contents.lastIndexOf(' ')
+                contents = contents.slice(last+1,laster)
+                var final = Number(contents)
+                callback(null,final+1)
+            }
+            else{
+                final = 1;
+                callback(null,final)
+            }
         }
     })
 }
@@ -145,6 +144,7 @@ export function removeLine(filename:string, data:string,callback?:ICallback){
                 if(status){
                     fs.readFile("./"+filename, 'utf8',function(err,contents){
                         if(!err){
+                            logController(process.argv[1], "after readfile " ,'info')
                             var first = contents.lastIndexOf(data)
                             var firstPart = contents.slice(0,first)
                             first = firstPart.lastIndexOf('#')
@@ -154,7 +154,8 @@ export function removeLine(filename:string, data:string,callback?:ICallback){
                             last = lastPart.indexOf('\n')
                             lastPart = lastPart.slice(last+1)
                             var ny = firstPart+lastPart
-                            fs.writeFile("./"+filename,'', 'utf8',function(err){
+                            logController(process.argv[1], ny ,'info')
+                            fs.writeFile("./"+filename, ny, 'utf8',function(err){
                                 if(!err){
                                     logController(process.argv[1], data +' removed from '+filename, 'info')
                                     callback(null,true);
