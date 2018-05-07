@@ -23,6 +23,7 @@ router.post('/', function(req, res){
 	
 	console.log(req.body.receiver);
 	console.log(req.body.msg);
+	console.log(req.body)
 	//console.log(msgIn);
 	DestList.findOne({ destination : req.body.receiver}, function(err, dest:IDestinationListModel){
 
@@ -35,7 +36,7 @@ router.post('/', function(req, res){
 				timeReceived: new Date(),
 				isSorted: false,
 				isSent: false,
-				msg: req.body.msg
+				msg: req.body
 			});
 			msgIn.populate(function(){});
 			msgIn.save(function(err, msg){

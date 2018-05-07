@@ -42,7 +42,7 @@ export function checkStatus(cb?:ICallback): void{
 	_checkStatus(cb);
 }
 */
-export function soapSend(msg:string, cb?:ICallback):void{
+export function soapSend(msg:object, cb?:ICallback):void{
 	
 	setTimeout(()=>{
 		var status = Math.random()*10;

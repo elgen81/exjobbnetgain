@@ -18,7 +18,7 @@ export var msgSchema: mongoose.Schema = new mongoose.Schema({
 	isSorted: Boolean,
 	timeReceived: Date,
 	timeSent: Date,
-	msg: String
+	msg: Object
 });
 
 export var Msg = mongoose.model<IMsgModel>("Msg", msgSchema);

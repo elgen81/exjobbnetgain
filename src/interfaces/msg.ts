@@ -11,7 +11,7 @@ interface IMsg{
 	isSorted: boolean,
 	timeReceived: Date,
 	timeSent: Date,
-	msg: string
+	msg: Object
 };
 
 export = IMsg;
