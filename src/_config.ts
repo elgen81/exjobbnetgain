@@ -26,5 +26,13 @@ config.pamXML = {
 
 config.resend = {
 	delay: 5000,
-	mult: 2
+	mult: 1
+}
+
+config.requestFormName = {
+	approval: "Approval"
+}
+
+config.requestFormPath = {
+	approval: "/CA SLCM/SRF/"
 }

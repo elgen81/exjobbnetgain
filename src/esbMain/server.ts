@@ -1,7 +1,7 @@
 //server.ts
 
 import app = require("./app");
-import {logController} from './logger'
+import { logController } from './logger'
 import { config } from "./_config";
 import { connection } from "mongoose";
 
