@@ -1,66 +1,48 @@
 import soap = require("soap");
-
+import { IMsgModel } from "./models/msg"
+import { config } from "./_config";
 
 interface ICallback{
 	( error: Error, staus:boolean ) :void
 }
 
-/*
-function _checkStatus(_cb:ICallback){
-		console.log("pre-soap call")
-		var args = { auth:{user: "pamadmin", password: "pamadmin"}}
-		var timer = setTimeout(_checkStatus(_cb), 30000);
-		soap.createClient("http://10.126.172.17:8090/itpam/soap?wsdl", (err, client:any) =>{
-			//client.setSecurity(new soap.BasicAuthSecurity("pamadmin", "pamadmin"));
-			clearTimeout(timer);
-			console.log("client created")
-			if(err)
-				{ _cb(err, false) }
-			else if(!client)
-				{ _cb(new Error("Client not created"), false)}
 
-			client.checkServerStatus(args, function(er, result, rawRes, soapHeader, rawReq){
-				console.log("soapcall calback")
-				if (err)
-					{ _cb(err, false) }
-				else if(!result)
-					{ _cb(new Error("No response from server"), false) }
-				else
-				{
-					_cb(null, result.serverStatus == "Server status ok.")
-				}
-			})
-		})
-	}
-
-export function checkStatus(cb?:ICallback): void{
+export function soapSend(message:IMsgModel, cb?:ICallback):void{
 	if(!cb) {cb = function(){}}
 
 	var auth = "Basic " + new Buffer("pamadmin" + ":" + "pamadmin").toString("base64");
-	console.log("pre first check call")
+	var self = this;
+	var args = { auth:{user: "pamadmin", password: "pamadmin"}, 
+				objLocation: { name: config.requestFormName["approval"], path: config.requestFormPath["approval"] }, 
+				params: 'replace' }
 
-	_checkStatus(cb);
-}
-*/
-export function soapSend(msg:object, cb?:ICallback):void{
-	
-	setTimeout(()=>{
-		var status = Math.random()*10;
-	
-	if(status > 1)
-		{
-			console.log(msg);
-			cb(null, true)
-		}
-	else
-		{
-			var err = new Error("Failed to send");
-			console.log(err)
-			cb(err, false)
-		}
-
-	},10000)
-	
+	var timeOut = setTimeout(function(){ cb(new Error("Could not reach server"), false) }, 30000);
+		console.log("pre-soap call")
+		soap.createClient("http://10.126.172.17:8090/itpam/soap?wsdl", (err, client:any) =>{
+			
+			clearTimeout(self.timeOut);
+			console.log("sendingclient created")
+			if(err)
+				{ cb(err, false) }
+			else if(!client)
+				{ cb(new Error("Client not created"), false)}
+			else
+			{
+				client.executeStartRequest(args, function(err, result, rawRes, soapHeader, rawReq){
+					console.log("in sending soapcall calback")
+					if (err)
+						{ cb(err, false) }
+					else if(!result)
+						{ cb(new Error("No response from server"), false) }
+					else
+					{	console.log(result)
+						cb(null, true)
+					}
+				}, {postProcess: function(_xml) {
+					return _xml.replace('replace', '<param name="RequestID">' + message.msg["request_id"] + '</param> <param name="RequestItemID">' + message.msg["request_item_id"] + '</param>')
+				}})
+			}
+		})
 }
 
 
@@ -70,15 +52,16 @@ export function soapSend(msg:object, cb?:ICallback):void{
 //http://10.126.172.17:8090/itpam/soap?wsdl
 export function checkStatus(cb?:ICallback): void{
 	if(!cb) {cb = function(){}}
-
+	var self = this;
 	var auth = "Basic " + new Buffer("pamadmin" + ":" + "pamadmin").toString("base64");
 	var args = { auth:{user: "pamadmin", password: "pamadmin"}}
 	
-	//var timer = setInterval(function(){
+	var timeOut = setTimeout(function(){ cb(new Error("Could not reach server"), false) }, 30000);
+	
 		console.log("pre-soap call")
 		soap.createClient("http://10.126.172.17:8090/itpam/soap?wsdl", (err, client:any) =>{
-			//client.setSecurity(new soap.BasicAuthSecurity("pamadmin", "pamadmin"));
-			//clearInterval(timer);
+			
+			clearTimeout(self.timeOut);
 			console.log("client created")
 			if(err)
 				{ cb(err, false) }
@@ -86,7 +69,7 @@ export function checkStatus(cb?:ICallback): void{
 				{ cb(new Error("Client not created"), false)}
 			else
 			{
-				client.checkServerStatus(args, function(er, result, rawRes, soapHeader, rawReq){
+				client.checkServerStatus(args, function(err, result, rawRes, soapHeader, rawReq){
 					console.log("soapcall calback")
 					if (err)
 						{ cb(err, false) }
@@ -99,6 +82,5 @@ export function checkStatus(cb?:ICallback): void{
 				})
 			}
 		})
-	//}, 30000)
 }
 

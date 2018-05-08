@@ -8,7 +8,7 @@ import sorter = require("./sorter");
 import { IDestinationListModel } from "./models/destinationList"
 import { IMsgModel } from "./models/msg"
 import { IQueueListModel } from "./models/queueList"
-import repo = require("./dbRepository");
+import * as repo from "./dbRepository";
 import outer = require("./outputer");
 import events = require("events")
 

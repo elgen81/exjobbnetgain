@@ -96,7 +96,7 @@ export class outputer{
 				}
 				else
 				{
-					soapout.soapSend(message.msg, function(err, status){
+					soapout.soapSend(message, function(err, status){
 						if(err)
 						{
 							self.numOfResends = 0;

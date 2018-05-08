@@ -21,7 +21,7 @@ interface ICallbackAny{
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(){
 	var destinationList = mongoose.model("DestinationList");
-	File.getAllLinesAsTuple("whitelist.ini",function(err,whitelistAll:Array<[number, string]>){ //[[2, "hej"], [3, "då"], [5, "sometahing"]]
+	File.getAllLinesAsTuple("../whitelist.ini",function(err,whitelistAll:Array<[number, string]>){ //[[2, "hej"], [3, "då"], [5, "sometahing"]]
 		if(!err){
 			destinationList.update({}, {active: false})
 			var destinationListAll = destinationList.find({});
