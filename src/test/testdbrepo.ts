@@ -106,6 +106,7 @@ describe('dbrepository, all functions related to the database',function(){
             })
         })
     })
+
     describe('queuePush(), adds message to databasequeue',function(){
         it('creates a new queue with a new message',function(done){
             fillData(true,true,function(err,data){
@@ -150,9 +151,33 @@ describe('dbrepository, all functions related to the database',function(){
             })
         })
     })
-    describe('queuePop moves an element from queue ')
-
-    3 meddelanden i kön, 
+    describe('queuePop moves an element from queue to sent',function(){
+        it("should pop a message to sent",function(done){
+            fillData(true,true,function(err,data){
+                setup(function(){
+                    var queues = mongoose.model("QueueList")
+                    var msgs = mongoose.model("Msg")
+                    var msgIn:mongoose.Document = new Msg({
+                    });
+                    msgIn.save(function(err,msg:IMsgModel){
+                        destinationListSetup("test.ini",function(err,status){
+                            queuePush(1,msg._id,function(err,status){
+                                assert.equal(err, null)
+                                assert.equal(status,true)
+                                queues.findOne({queueId: 1}, function(err, queue:IQueueListModel){
+                                    assert.equal(queue.msgArray[0].toString,msg._id.toString)
+                                    assert.equal(queue.lengthOfQueue,1)
+                                    done()
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
+    })
+})
+   /* 3 meddelanden i kön, 
     spara 1a elementet
     längden på kön
     poppa 
@@ -163,5 +188,4 @@ describe('dbrepository, all functions related to the database',function(){
     skall vara lika som tidigare
     sätt issent på meddelandet som ligger i lastmessagesent
     poppa
-    minskar array och lastmessage
-})
+    minskar array och lastmessage*/
