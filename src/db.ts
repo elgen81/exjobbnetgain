@@ -49,4 +49,4 @@ require("./models/msg");
 require("./models/queueList");
 
 //Instantiate DestinationList collection to represent whitelist.ini
-repo.destinationListSetup();
+repo.destinationListSetup("whitelist.ini");

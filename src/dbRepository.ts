@@ -7,7 +7,7 @@ import { logController} from "./logger"
 
 
 interface ICallbackB{
-	( error: Error, staus:boolean ) :void
+	( error: Error, status:boolean ) :void
 }
 interface ICallbackQ{
 	( error: Error, result:IQueueListModel ) :void
@@ -19,9 +19,9 @@ interface ICallbackAny{
     (error:Error, status:any[]) :void
 }
 //Instantiate DestinationList collection to represent whitelist.ini
-export function destinationListSetup(){
+export function destinationListSetup(file,callback?:ICallbackB){
 	var destinationList = mongoose.model("DestinationList");
-	File.getAllLinesAsTuple("whitelist.ini",function(err,whitelistAll:Array<[number, string]>){ //[[2, "hej"], [3, "då"], [5, "sometahing"]]
+	File.getAllLinesAsTuple(file,function(err,whitelistAll:Array<[number, string]>){ //[[2, "hej"], [3, "då"], [5, "sometahing"]]
 		if(!err){
 			destinationList.update({}, {active: false})
 			var destinationListAll = destinationList.find({});
@@ -31,6 +31,7 @@ export function destinationListSetup(){
 					if(count > 0){
 						destinationList.update({ queueId: entry[0]} && {destination: entry[1]}, {active: true});
 						logController(process.argv[1], entry+ ' now active.', "info")
+						callback(null,true)
 					}
 					else{
 						var newDestination = new destinationList({
@@ -41,9 +42,11 @@ export function destinationListSetup(){
 						newDestination.save(function(err){
 							if(err){ 
 								logController(process.argv[1], 'Error adding new destination', "error", "New Destination")
+								callback(err,false)
 							}
 							else{ 
 								logController(process.argv[1], "New destination added: " + entry[0].toString +" "+ entry[1], "info")
+								callback(null,true)
 							}
 						});
 					}
@@ -52,13 +55,15 @@ export function destinationListSetup(){
 		}
 		else{
 			logController(process.argv[1], err, "error")
+			callback(err,false)
 		}
 	})
 }
 
-export function doesQueueExists(destination, callback?:ICallbackB):void{
+function doesQueueExists(destination, callback?:ICallbackB):void{
 	var QueueList = mongoose.model("QueueList");
-	if(!callback){callback = function(){}};var doesExist:boolean = false;
+	if(!callback){callback = function(){}};
+	var doesExist:boolean = false;
 
 	QueueList.find({queueId: destination}, function(err, queue){
 		logController(process.argv[1], "Queue: " + queue, "info")
@@ -75,11 +80,6 @@ export function doesQueueExists(destination, callback?:ICallbackB):void{
 		}
 	})
 }
-
-export function startNewQueue():boolean{
-	return false;
-}
-
 
 //Push a new message onto the end of the message array in a queue document
 export function queuePush(destination, msgId, callback?: ICallbackB){
@@ -124,55 +124,6 @@ export function queuePush(destination, msgId, callback?: ICallbackB){
 		}
 		})
 }
-
-/*
-//Push a new message onto the end of the message array in a queue document
-export function queuePush(destination, msgId, callback?: ICallback){
-	var Msg = mongoose.model("Msg");
-	var Queue = mongoose.model("QueueList");
-	if(!callback){callback = function(){}};
-
-	console.log("Dest: "+ destination)
-	//Msg.findById(msgId, function(err, msg:IMsgModel){
-		doesQueueExists(destination, function(err, status){
-			console.log("Pushing " + msg._id + " to Queue with destination " + destination)
-			if(err){throw err}
-			if(status)
-			{
-				Queue.findOne({queueId: destination}, function(err, queue:IQueueListModel){
-					queue.msgArray.push(msg._id)
-					queue.lengthOfQueue = queue.lengthOfQueue + 1
-					queue.save(function(err, queue:IQueueListModel){
-						queue.populate('msgArray')
-					})
-				})
-			}	
-		else{
-			var newQueue = new Queue({
-				queueId: msg.queueId,
-				lengthOfQueue: 1,
-				msgArray: [msg._id]
-			});
-			newQueue.save(function(err, queue){
-				if(err){
-					console.log(err)
-					callback(err, false)
-				}
-				else{
-					queue.populate('msgArray')
-					callback(null, true);
-				}
-			});
-		}
-		})
-			
-	//});
-}
-
-
-*/
-
-
 
 //Retrieves the first element in the message array of a queue document
 export function queuePop(queueId:number, callback?:ICallbackQ){

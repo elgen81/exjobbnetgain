@@ -49,7 +49,7 @@ export function logController(path:string, err, severity, optional=''){
     break
     case'info':{
         logger.info("%s: (%s), Path = %s, More info = %s",timestamp, err, path,optional)
-        console.log(err)
+        //console.log(err)
         }
     break
     default:{

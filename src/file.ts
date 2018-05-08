@@ -186,7 +186,7 @@ export function removeLine(filename:string, data:string,callback?:ICallback){
 export function getLineAsTupleById(filename:string, data:number,callback?: ICallbackTuple){
     var ndata = "#"+data
     let tuple: [number,string]
-    fileExists(filename,function(err,status){
+    exists(filename,function(err,status){
         if(status){
             dataExists(filename,ndata,function(err,status){
                 if(status){
@@ -208,19 +208,19 @@ export function getLineAsTupleById(filename:string, data:number,callback?: ICall
                     })
                 }
                 else{
-                    callback(err,null)
+                    callback(new Error('ID not in list'),null)
                 }
             })
         }
         else{
-            callback(err,null)
+            callback(new Error('The file is missing'),null)
         }
     })
 }
 
 export function getLineAsTupleByName(filename:string, data:string,callback?:ICallbackTuple){
     let tuple: [number,string]
-    fileExists(filename,function(err,status){
+    exists(filename,function(err,status){
         if(status){
             dataExists(filename, data, function(err,status){
                 if(status){
@@ -244,19 +244,19 @@ export function getLineAsTupleByName(filename:string, data:string,callback?:ICal
                     })
                 }
                 else{
-                    callback(err,null)
+                    callback(new Error('ID not in list'),null)
                 }
             })
         }
         else{
-            callback(err,null)
+            callback(new Error('The file is missing'),null)
         }
     })
 }
 export function getAllLinesAsTuple(filename,callback?:ICallbackTuple){
     let tuple: Array<[number,string]>
     tuple = []
-    fileExists(filename,function(err,status){
+    exists(filename,function(err,status){
         if(status){
             fs.readFile("./"+filename, 'utf8',function(err,contents){
                 if(!err){
