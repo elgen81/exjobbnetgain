@@ -137,7 +137,6 @@ export function queuePop(queueId:number, callback?:ICallbackQ){
 		else if(!queue)
 			{ callback(new Error("Could not find queue"), null)}
 		else{
-			console.log(queue)
 			if(queue.msgArray.length <= 0)
 			{
 				callback(new Error("Queue is empty"), null);

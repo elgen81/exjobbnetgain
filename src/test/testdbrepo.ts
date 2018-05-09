@@ -15,6 +15,7 @@ interface ICallback{
 }
 
 function setup(callback?:ICallback){
+    if(!callback){callback = function(){}};
     mongoose.connect(config.mongoURI["test"], function(err){
         if(err){
             callback(err,false)
@@ -31,13 +32,16 @@ function setup(callback?:ICallback){
 }
 
 function tear(callback?:ICallback){
+    if(!callback){callback = function(){}};
     mongoose.connection.dropDatabase(function(err){
         if(!err){
             mongoose.connection.close(function(err){
                 if(err){
                     callback(err,false)
                 }
-                callback(null,true)
+                else{
+                    callback(null,true)
+                }
             });
         }
         else{
@@ -121,7 +125,7 @@ describe('dbrepository, all functions related to the database',function(){
                                 assert.equal(err, null)
                                 assert.equal(status,true)
                                 queues.findOne({queueId: 1}, function(err, queue:IQueueListModel){
-                                    assert.equal(queue.msgArray[0].toString,msg._id.toString)
+                                    assert.equal(queue.msgArray[0].toString(),msg._id.toString())
                                     assert.equal(queue.lengthOfQueue,1)
                                     done()
                                 })
@@ -157,16 +161,90 @@ describe('dbrepository, all functions related to the database',function(){
                 setup(function(){
                     var queues = mongoose.model("QueueList")
                     var msgs = mongoose.model("Msg")
-                    var msgIn:mongoose.Document = new Msg({
-                    });
-                    msgIn.save(function(err,msg:IMsgModel){
+                    var message = [new Msg(),new Msg(),new Msg()]
+                    Msg.collection.insertMany(message,function(err,messages){
                         destinationListSetup("test.ini",function(err,status){
-                            queuePush(1,msg._id,function(err,status){
-                                assert.equal(err, null)
-                                assert.equal(status,true)
-                                queues.findOne({queueId: 1}, function(err, queue:IQueueListModel){
-                                    assert.equal(queue.msgArray[0].toString,msg._id.toString)
-                                    assert.equal(queue.lengthOfQueue,1)
+                            queuePush(1,message[0]._id, function(err,status){
+                                queuePush(1,message[1]._id, function(err,status){
+                                    queuePush(1,message[2]._id, function(err,status){    
+                                        queues.findOne({queueId: 1}, function(err, queue:IQueueListModel){
+                                            queue.lengthOfQueue=queue.msgArray.length
+                                            queue.save(function(err,queue){
+                                                queuePop(1,function(err,queue){
+                                                    assert.equal(queue.msgArray[0].toString(),message[1]._id.toString())
+                                                    assert.equal(queue.lengthOfQueue,2)
+                                                    assert.equal(queue.lastSentMsg.toString(),message[0]._id.toString())
+                                                    queuePop(1,function(err,queue){
+                                                        assert.equal(queue.msgArray[0].toString(),message[1]._id.toString())
+                                                        assert.equal(queue.lengthOfQueue,2)
+                                                        assert.equal(queue.lastSentMsg.toString(),message[0]._id.toString())
+                                                        Msg.findOne({_id: queue.lastSentMsg},function(err,res){
+                                                            res.isSent=true;
+                                                            res.save(function(err,product){
+                                                                queuePop(1,function(err,queue){
+                                                                    assert.equal(queue.msgArray[0].toString(),message[2]._id.toString())
+                                                                    assert.equal(queue.lengthOfQueue,1)
+                                                                    assert.equal(queue.lastSentMsg.toString(),message[1]._id.toString())
+                                                                    tear(function(){
+                                                                        done()
+                                                                    })
+                                                                })
+                                                            })
+                                                        })
+                                                    })
+                                                })
+                                            })
+                                        })
+                                    })
+                                })
+                            }) 
+                        })
+                    })
+                })
+            })
+        })
+    })
+    describe('activeMsg, retrieves how many messages are active',function(){
+        it("should return the numbers of messages that are sorted but not sent",function(done){
+            fillData(true,true,function(err,data){
+                setup(function(){
+                    var queues = mongoose.model("QueueList")
+                    var msgs = mongoose.model("Msg")
+                    activeMsg(function(err,data){
+                        assert.equal(data,0)
+                        var message = [{isSorted:true,isSent:false},{isSorted:true,isSent:true},{isSorted:false,isSent:false},{isSorted:false,isSent:true}]
+                        msgs.insertMany(message,function(err,messages){
+                            destinationListSetup("test.ini",function(err,status){
+                                activeMsg(function(err,data){
+                                    assert.equal(err,null)
+                                    assert.equal(data,1)
+                                    tear(function(){
+                                        done()
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
+    })
+    describe('activeMsg, retrieves how many messages are active',function(){
+        it("should return the numbers of messages that are sorted but not sent",function(done){
+            fillData(true,true,function(err,data){
+                setup(function(){
+                    var queues = mongoose.model("QueueList")
+                    var msgs = mongoose.model("Msg")
+                    var message = [{queueId: 1, sender: "www.test.com", receiver: "www.test1.com", timeReceived: new Date() ,isSorted:true,isSent:false},{queueId: 2, sender: "www.test2.com", receiver: "www.test3.com", timeReceived: new Date(), isSorted:true,isSent:true},{queueId: 3, sender: "www.test4.com", receiver: "www.test5.com", timeReceived: new Date(),isSorted:false,isSent:false},{queueId: 4, sender: "www.test6.com", receiver: "www.test7.com", timeReceived: new Date(),isSorted:false,isSent:true}]
+                    msgs.insertMany(message,function(err,messages){
+                        destinationListSetup("test.ini",function(err,status){
+                            listActive(function(err,data){
+                                assert.equal(err,null)
+                                assert.equal(data[0].queueId,message[0].queueId)
+                                assert.equal(data[0].sender,message[0].sender)
+                                assert.equal(data[0].receiver,message[0].receiver)
+                                assert.equal(data[0].timeReceived.toString(),message[0].timeReceived.toString())
+                                tear(function(){
                                     done()
                                 })
                             })
@@ -176,16 +254,29 @@ describe('dbrepository, all functions related to the database',function(){
             })
         })
     })
+    describe('activeQueues, retrieves how many queues are active',function(){
+        it("should return the numbers of queues that has messages in them",function(done){
+            fillData(true,true,function(err,data){
+                setup(function(){
+                    var queues = mongoose.model("QueueList")
+                    var msgs = mongoose.model("Msg")
+                    activeQueues(function(err,data){
+                        assert.equal(data,0)
+                        var queue = [{lengthOfQueue:1},{lengthOfQueue:0},{lengthOfQueue:-1}]
+                        queues.insertMany(queue,function(err,queueus){
+                            destinationListSetup("test.ini",function(err,status){
+                                activeQueues(function(err,data){
+                                    assert.equal(err,null)
+                                    assert.equal(data,1)
+                                    tear(function(){
+                                        done()
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
+    })
 })
-   /* 3 meddelanden i kön, 
-    spara 1a elementet
-    längden på kön
-    poppa 
-    kolla längden -1 på
-    array.length och lengthofqueue
-    lastmessage sent = 1a Element
-    poppa
-    skall vara lika som tidigare
-    sätt issent på meddelandet som ligger i lastmessagesent
-    poppa
-    minskar array och lastmessage*/
