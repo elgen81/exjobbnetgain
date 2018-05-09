@@ -61,41 +61,4 @@ router.post('/', function(req, res){
 		}
 	}).limit(1);
 });
-/*
-router.get('/:dest', function(req, res){
-	console.log("in get")
-	outer.out(req.params.dest, res);
-});
-*/
-router.get('/display', function(req, res){
-	//if(req.connection.remoteAddress == "1")
-		//{
-		 //process.send('display');
-		 //eventEmitter.emit('display')
-		 //res.status(200).send("OK"); 
-		 //}
-		 res.render('../views/index.html')
-})
-
-
-/*router.get('/:dest', function(req, res){
-	console.log(req.params.dest)
-	repo.queuePop(req.params.dest, function(err, queue:IQueueListModel){
-		console.log("msgId: "+ queue.lastSentMsg)
-		if(err){ console.log("In QueuePop(): "+err); res.status(500).send("Error getting message: " + err)}
-		Msg.findById(queue.lastSentMsg, function(err, msg:IMsgModel){
-			if(err){ console.log("In Msg.Find(): "+err); res.status(404).send("Error getting message: " + err) }
-			if(msg){
-				console.log(msg)
-				res.status(200).send(msg)
-				msg.isSent = true;
-				msg.save(function(err){
-					queue.timeOfLastSent = new Date();
-				})
-			}
-			else{ res.status(200).send("No messages to send")}	
-			})
-	})
-});*/
-
 export = router;

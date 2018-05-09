@@ -4,7 +4,7 @@ import {config} from "./../_config";
 import {destinationListSetup, queuePush, queuePop, activeMsg, activeQueues, listActive} from './../dbRepository';
 import * as mongoose from "mongoose";
 import { DestinationList } from '../models/destinationList';
-import {fillData} from '../test/testfile'
+import {fillData} from '../test/file.test'
 import { Msg, IMsgModel } from '../models/msg';
 import { queue } from 'async';
 import { IQueueListModel } from '../models/queueList';
