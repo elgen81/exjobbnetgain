@@ -28,8 +28,8 @@
         });
 
         $(document).ready(function(){
-            $("#load_currCue").on("click", function(){
-                $("#main").load("currcue.html");
+            $("#load_currQueue").on("click", function(){
+                $("#main").load("currQueue.html");
             });
         });
         
@@ -50,6 +50,19 @@
                 $("#main").load("statistics.html");
             });
         });
+        function serverOff(){
+            $.ajax({
+                url : 'http://localhost:8000/menu/shutdown',
+                type : 'POST',
+                success : function(data,textStatus, jqXHR){
+                    document.getElementById("serverOff").style.color = "red";
+                    getdata(); 
+                },
+                error : function(jqXHR,textStatus, errorThrown){
+                    document.getElementById("serverOff").style.color = "red";
+                }
+            })                  
+        }
 
         function getData(){
             var data={};
@@ -66,18 +79,22 @@
                                 case "1":
                                     document.getElementById("statusS").innerText = "Connected";
                                     document.getElementById("statusS").style.color = "green";
+                                    document.getElementById("serverOff").style.color = "green";
                                     break;
                                 case "2":
                                     document.getElementById("statusS").innerText = "Connecting";
                                     document.getElementById("statusS").style.color = "yellow";
+                                    document.getElementById("serverOff").style.color = "yellow";
                                     break;
                                 case "3":
                                     document.getElementById("statusS").innerText = "Disconnecting";
                                     document.getElementById("statusS").style.color = "yellow";
+                                    document.getElementById("serverOff").style.color = "yellow";
                                     break;
                                 default:
                                     document.getElementById("statusS").innerText = "Error";
                                     document.getElementById("statusS").style.color = "red";
+                                    document.getElementById("serverOff").style.color = "red";
                                     break;    
                             }
                             document.getElementById("statusQ").innerText = data.statusQ;
@@ -88,6 +105,7 @@
                         error : function(jqXHR,textStatus, errorThrown){
                             document.getElementById("statusS").innerText = data.statusS;
                             document.getElementById("statusS").style.color = "red"
+                            document.getElementById("serverOff").style.color = "red";
                             document.getElementById("statusQ").innerText = data.statusQ;
                             document.getElementById("statusQ").style.color = "red"
                             document.getElementById("statusP").innerText = data.statusP;
@@ -95,7 +113,10 @@
                         } 
             })    
         }            
-    </script> 
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); 
+        });
+        </script>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-default navbar-fixed-top">
@@ -105,17 +126,18 @@
                         <ul class="navbar-nav mr-auto">
                             <li class="btn-group btn-group-lg" role="group">
                                 <button type="button" class="btn btn-basic btn-lg" id="load_whitelist" >Whitelist</button>
-                                <button type="button" class="btn btn-basic btn-lg" id="load_currCue" >Current Queues</button>
+                                <button type="button" class="btn btn-basic btn-lg" id="load_currQueue" >Current Queues</button>
                                 <button type="button" class="btn btn-basic btn-lg" id="load_log" >Log</button>
                                 <button type="button" class="btn btn-basic btn-lg" id="load_errorLog" >Errorlog</button>
-                                <button type="button" class="btn btn-basic btn-lg"  disabled id="load_statistics" >Statistics</button> 
+                                <!--<button type="button" class="btn btn-basic btn-lg btn-none" disabled id="load_statistics" >Statistics</button> -->
                             </li>
                         </ul>
                     <span class="navbar-text">        
-                        | Server status: <span id="statusS"></span>
-                        | Active queues: <span id="statusQ"></span>
-                        | Packets in queues: <span id="statusP"></span>
-                        | <button class="glyphicon glyphicon-refresh" onclick="getData()"></button>
+                        | Server: <span id="statusS"data-toggle="tooltip" data-placement="bottom" title ="Server status"></span>
+                        | Active queues: <span id="statusQ"data-toggle="tooltip" data-placement="bottom" title ="Number of Active Queues"></span>
+                        | Packets in queues: <span id="statusP"data-toggle="tooltip" data-placement="bottom" title ="Number of Packets in all Active Queues"></span>
+                        | <button class="glyphicon glyphicon-refresh" onclick="getData()" data-toggle="tooltip" data-placement="bottom" title ="Refresh status"></button>
+                        | <button class="glyphicon glyphicon-off" id="serverOff" onclick="serverOff()" data-toggle="tooltip" data-placement="bottom" title ="Turn off the server"></button>
                     </span>
                     </div>
                 </div>
