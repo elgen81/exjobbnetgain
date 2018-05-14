@@ -20,9 +20,14 @@ interface ICallbackAny{
 }
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(file,callback?:ICallbackB){
+<<<<<<< HEAD
 	if(!callback){
         callback = function(){}
     };
+=======
+	if(!callback) {callback = function(){}}
+
+>>>>>>> 7eb447e4ce404f0ce1777fcbbd6188b23623f4a0
 	var destinationList = mongoose.model("DestinationList");
 	File.getAllLinesAsTuple(file,function(err,whitelistAll:Array<[number, string]>){ //[[2, "hej"], [3, "då"], [5, "sometahing"]]
 		if(!err){
@@ -154,7 +159,8 @@ export function queuePop(queueId:number, callback?:ICallbackQ){
 						queue.lastSentMsg = queue.msgArray.shift()
 						queue.lengthOfQueue = queue.msgArray.length;
 						queue.save(function(err, queue){
-							if(err){ callback(err, null) }
+							if(err){ callback(new Error("Unable to save queue" + queue.queueId + "Message to be infront of queue: " + queue.lastSentMsg)
+								, null) }
 							else { callback(null, queue) }
 						})
 					}

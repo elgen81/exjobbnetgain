@@ -106,7 +106,7 @@ export class outputer{
 						{	
 							message.isSent = true;
 							message.save(function(err){
-								if(err){throw err}
+								if(err){console.log("could not save in out");throw err}
 
 								self.numOfResends = 0;
 								self.sending = false;

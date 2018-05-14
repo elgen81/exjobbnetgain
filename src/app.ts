@@ -53,8 +53,12 @@ require("./models/msg");
 require("./models/queueList");
 
 //Instantiate DestinationList collection to represent whitelist.ini
+<<<<<<< HEAD
 repo.destinationListSetup("whitelist.ini");
 
+=======
+repo.destinationListSetup("whitelist.ini", (err, status)=>{console.log(err); console.log(status)});
+>>>>>>> 7eb447e4ce404f0ce1777fcbbd6188b23623f4a0
 
 
 console.log(app.settings.env)

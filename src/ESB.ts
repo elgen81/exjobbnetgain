@@ -4,9 +4,11 @@ import events = require("events")
 
 var eventEmitter = new events.EventEmitter();
 
-var serverProcess = child_proc.fork("./server.js", [])
+var serverProcess = child_proc.fork("./dist/server.js", [])
 var outPutProcesses:Array<[number, child_proc.ChildProcess]> = [];
+var display = null;
 
+//Events for input server
 serverProcess.on('data', (data) => {
   console.log(`grep stderr: ${data}`);
 });
@@ -16,11 +18,36 @@ serverProcess.on('close', (code) => {
     console.log(`input process exited with code ${code}`);
   }
 });
+serverProcess.on('message', (msg) =>{
+  
+  if(msg.msg = "newOut")
+  {
+    console.log(msg.id)
+    eventEmitter.emit(msg.msg, msg.id)
+  }
+  if(msg.msg = "display")
+  {
+    if(display) 
+      { console.log("Display aleready acrive") }
+    else
+      {
+        display = child_proc.spawn('electron', ['.']);
+        display.on('close', (code) => {
+        if (code !== 0) {
+          console.log(`output process exited with code ${code}`);
+        }
+        display = null;
+        })
+      }
+  }
+})
+
 process.on('SIGINT', (code) => {
-  serverProcess.kill('SIGINT');
+  if(serverProcess) { serverProcess.kill('SIGINT'); }
+  if(display) { display.kill('SIGINT'); }
   for(let proc of outPutProcesses)
   {
-  	proc[1].kill('SIGINT');
+  	if(proc[1]) { proc[1].kill('SIGINT'); }
   }
 });
 
@@ -39,7 +66,7 @@ eventEmitter.on('newOut', (dest) => {
     { console.log("Output " + dest + " is already running") }
   else
     {
-      var out  = child_proc.fork('./out.js', [dest])
+      var out  = child_proc.fork('./dist/out.js', [dest])
       out.on('close', (code) => {
         if (code !== 0) {
           console.log(`output process exited with code ${code}`);
@@ -56,22 +83,6 @@ eventEmitter.on('newOut', (dest) => {
       outPutProcesses.push([dest, out]);
     }
 });
-
-serverProcess.on('message', (msg) =>{
-  
-  if(msg.msg = "newOut")
-  {
-    console.log(msg.id)
-    eventEmitter.emit(msg.msg, msg.id)
-  }
-
- /*
-  console.log(msg)
-  var display = child_proc.spawn('electron', ['.'])
-  display.on('message', (msg) => {
-    console.log(msg)
-  })*/
-})
 
 eventEmitter.on("outDone", (id)=>{
   var ids = []
