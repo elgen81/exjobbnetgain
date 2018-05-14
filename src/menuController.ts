@@ -128,17 +128,9 @@ router.post('/whitelist', function(req,res){
 });
 
 router.post('/shutdown', function(req, res){
-    if(req.connection.remoteAddress){
-        mongoose.connection.close(function(err:Error){
-            if(err){
-                logController(process.argv[1], err, "error")
-                res.status(500).send("Error shutting down")
-            }
-            else{
-                res.status(200).send()
-                process.kill(process.pid, "SIGTERM")
-            }
-        })
+    if(req.connection.remoteAddress == "1"){
+        eventEmitter.emit("exitInput")
+        res.status(200).send("Input server shutting down")    
     }
     else{
         console.log("Nemas Problemas")
@@ -147,19 +139,18 @@ router.post('/shutdown', function(req, res){
 })
 
 router.post('/startup', function(req, res){
-    if(req.connection.remoteAddress){
-        mongoose.connection.close(function(err:Error){
-            if(err){
-                console.log("got here")
-                logController(process.argv[1], err, "error")
-                res.status(500).send("Error shutting down")
-            }
-            else{
-                console.log("Got herer")
-                res.status(200).send()
-                process.kill(process.pid, "SIGTERM")
-            }
-        })
+    if(req.connection.remoteAddress == "1"){
+        eventEmitter.emit("startInput")    
+    }
+    else{
+        console.log("Nemas Problemas")
+        res.status(500).send("You are not supposeed to be here lurking")
+    }
+})
+
+router.post('/display', function(req, res){
+    if(req.connection.remoteAddress == "1"){
+        eventEmitter.emit("display")    
     }
     else{
         console.log("Nemas Problemas")

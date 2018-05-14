@@ -6,77 +6,58 @@ import { config } from "./_config";
 import * as express from "express"
 export var eventEmitter = new events.EventEmitter();
 
-//Menuserver setup and controll
-  const GracefulShutdownManager = require('@moebius/http-graceful-shutdown').GracefulShutdownManager
-
-  var port:number = config.port || 3000;
-  var app = express()
-  var server = app.listen(port, function(err){
-    if(err) { 
-      logController(process.argv[1], err, 'error', "Listening on port")
-     }
-    else{
-      console.log("Express server listening on port " + port);
-    }
-  });
-  const shutdownManager = new GracefulShutdownManager(server)
-  process.on('SIGTERM', () =>{
-    shutdownManager.terminate(() => {
-      logController(process.argv[1], 'Server is shutdown gracefully', "info")
-    })
-  })
-  import MenuController = require("./menuController")
-  app.use("/menu", MenuController)
-
 
 //Child process management
   var serverProcess = child_proc.fork("./dist/server.js", [])
   var outPutProcesses:Array<[number, child_proc.ChildProcess]> = [];
-  var display = null;
+  var display = child_proc.spawn('electron', ['.']);
 
-//Events for input server
-  serverProcess.on('data', (data) => {
-    console.log(`grep stderr: ${data}`);
-  });
-
-  serverProcess.on('close', (code) => {
-    if (code !== 0) {
-      console.log(`input process exited with code ${code}`);
-    }
-  });
-  serverProcess.on('message', (msg) =>{
-    
-    if(msg.msg = "newOut")
-    {
-      console.log(msg.id)
-      eventEmitter.emit(msg.msg, msg.id)
-    }
-    if(msg.msg = "display")
-    {
-      if(display) 
-        { console.log("Display aleready acrive") }
-      else
-        {
-          display = child_proc.spawn('electron', ['.']);
-          display.on('close', (code) => {
-          if (code !== 0) {
-            console.log(`output process exited with code ${code}`);
-          }
-          display = null;
-          })
-        }
-    }
-  })
-
-  process.on('SIGINT', (code) => {
-    if(serverProcess) { serverProcess.kill('SIGINT'); }
+  process.on('SIGTERM', (code) => {
+    if(serverProcess) { serverProcess.kill('SIGINT') }
     if(display) { display.kill('SIGINT'); }
     for(let proc of outPutProcesses)
     {
-    	if(proc[1]) { proc[1].kill('SIGINT'); }
+      if(proc[1]) { proc[1].kill('SIGINT'); }
     }
   });
+  eventEmitter.emit("startInput");
 
+//Events for input server
+  eventEmitter.on("startInput", ()=> {
+      console.log("in start, erver: " + serverProcess)
+      if(serverProcess) 
+        { console.log("Input server aleready acrive") }
+      else{
+        serverProcess = child_proc.fork("./dist/server.js", [])
+
+        serverProcess.on('data', (data) => {
+          console.log(`Input stderr: ${data}`);
+        });
+
+        serverProcess.on('close', (code) => {
+          if (code !== 0) {
+            console.log(`input process exited with code ${code}`);
+            serverProcess = null;
+          }
+        });
+
+        serverProcess.on('message', (msg) =>{
+          if(msg.msg = "newOut")
+          {
+            console.log(msg.id)
+            eventEmitter.emit(msg.msg, msg.id)
+          }
+        })  
+      }
+      
+  })
+
+  eventEmitter.on("exitInput", () =>{
+    if(serverProcess)
+      {  serverProcess.send("exit") }
+  })
+
+  
 //Events for output server
   eventEmitter.on('newOut', (dest) => {
     console.log(dest)
@@ -124,3 +105,36 @@ export var eventEmitter = new events.EventEmitter();
 
     outPutProcesses.splice(index, 1);
   })
+
+
+  eventEmitter.on("display", () =>{
+    if(display) 
+      { console.log("Display aleready acrive") }
+    else
+      {
+        display = child_proc.spawn('electron', ['.']);
+        display.on('close', (code) => {
+        if (code !== 0) {
+          console.log(`output process exited with code ${code}`);
+        }
+        display = null;
+        })
+      }
+
+  })
+  
+//Menuserver setup and controll
+  const GracefulShutdownManager = require('@moebius/http-graceful-shutdown').GracefulShutdownManager
+
+  var port:number = config.menuPort || 3030;
+  var app = express()
+  var server = app.listen(port, function(err){
+    if(err) { 
+      logController(process.argv[1], err, 'error', "Listening on port")
+     }
+    else{
+      console.log("Express server listening on port " + port);
+    }
+  });
+  import MenuController = require("./menuController")
+  app.use("/menu", MenuController)
