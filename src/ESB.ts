@@ -8,9 +8,9 @@ export var eventEmitter = new events.EventEmitter();
 
 
 //Child process management
-  var serverProcess = child_proc.fork("./dist/server.js", [])
+  var serverProcess = null
   var outPutProcesses:Array<[number, child_proc.ChildProcess]> = [];
-  var display = child_proc.spawn('electron', ['.']);
+  var display = null
 
   process.on('SIGTERM', (code) => {
     if(serverProcess) { serverProcess.kill('SIGINT') }
@@ -20,7 +20,7 @@ export var eventEmitter = new events.EventEmitter();
       if(proc[1]) { proc[1].kill('SIGINT'); }
     }
   });
-  eventEmitter.emit("startInput");
+
 
 //Events for input server
   eventEmitter.on("startInput", ()=> {
@@ -123,6 +123,10 @@ export var eventEmitter = new events.EventEmitter();
 
   })
   
+
+  eventEmitter.emit("startInput");
+  eventEmitter.emit("display");
+
 //Menuserver setup and controll
   const GracefulShutdownManager = require('@moebius/http-graceful-shutdown').GracefulShutdownManager
 
