@@ -62,7 +62,6 @@ import InputController = require("./InputController");
 app.use("/input", InputController);
 import OutputController = require("./OutputController");
 app.use("/output", OutputController);
-import MenuController = require("./menuController")
-app.use("/menu", MenuController)
+
 
 export = app;

@@ -11,6 +11,7 @@ config.mongoURI = {
 }
 
 config.port = 8000
+config.menuPort = 8080
 
 config.pam = {
 	user: "pamadmin",
