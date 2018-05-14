@@ -16,7 +16,7 @@ config.pam = {
 	user: "pamadmin",
 	password: "pamadmin",
 	pamPort: 8090,
-	pamWSDL: "http://10.126.172.17:8090/itpam/soap?wsdl"
+	pamWSDL: "http://10.126.172.7:8090/itpam/soap?wsdl"
 }
 
 config.pamXML = {
