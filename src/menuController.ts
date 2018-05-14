@@ -8,7 +8,7 @@ import { IQueueListModel } from "./models/queueList"
 import repo = require("./dbRepository");
 import {logController} from "./logger"
 import {appendLine, removeLine, fileToString} from "./file"
-import {eventEmitter} from './ESB'
+import {eventEmitter, serverStatus} from './ESB'
 
 var response
 var router = express.Router();

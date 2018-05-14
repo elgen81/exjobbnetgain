@@ -4,6 +4,7 @@ import events = require("events")
 import {logController} from './logger'
 import { config } from "./_config";
 import * as express from "express"
+import * as mongoose from "mongoose"
 export var eventEmitter = new events.EventEmitter();
 
 
@@ -140,5 +141,35 @@ export var eventEmitter = new events.EventEmitter();
       console.log("Express server listening on port " + port);
     }
   });
+
+//DATABASE CONNECTION
+  //var uri:string = "mongodb://127.0.0.1/my_db";
+  console.log(config.mongoURI[app.settings.env])
+  var uri:string = config.mongoURI[app.settings.env]
+  mongoose.connect(uri, (err) => {
+    if (err) {
+      logController(process.argv[1], err, "error", "Connection MongoDb")
+    }
+    else {
+      logController(process.argv[1], "Connected to MongoDb", "info", "Connection MongoDb")
+
+    }
+  });
+
+//Init database models
+  require("./models/destinationList");
+  require("./models/msg");
+  require("./models/queueList");
+
+//Routing config
   import MenuController = require("./menuController")
   app.use("/menu", MenuController)
+
+
+  export function serverStatus():boolean{
+    
+    if(serverProcess)
+      { return true}
+    else
+      { return false}
+  }
