@@ -20,14 +20,8 @@ interface ICallbackAny{
 }
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(file,callback?:ICallbackB){
-<<<<<<< HEAD
-	if(!callback){
-        callback = function(){}
-    };
-=======
 	if(!callback) {callback = function(){}}
 
->>>>>>> 7eb447e4ce404f0ce1777fcbbd6188b23623f4a0
 	var destinationList = mongoose.model("DestinationList");
 	File.getAllLinesAsTuple(file,function(err,whitelistAll:Array<[number, string]>){ //[[2, "hej"], [3, "då"], [5, "sometahing"]]
 		if(!err){
