@@ -127,21 +127,14 @@ router.post('/whitelist', function(req,res){
     }
 });
 
-router.get('/getList', function(req,res){
-    
-})
-
-
 router.post('/shutdown', function(req, res){
     if(req.connection.remoteAddress){
         mongoose.connection.close(function(err:Error){
             if(err){
-                console.log("got here")
                 logController(process.argv[1], err, "error")
                 res.status(500).send("Error shutting down")
             }
             else{
-                console.log("Got herer")
                 res.status(200).send()
                 process.kill(process.pid, "SIGTERM")
             }

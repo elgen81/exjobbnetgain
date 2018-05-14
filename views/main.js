@@ -5,8 +5,10 @@ var url = require('url');
 function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({ 
-        width: 1200, 
+        width: 1400, 
         height: 900,
+        minWidth: 1400,
+        minHeight: 900,
         webPreferences: {
             nodeIntegration: false
         },

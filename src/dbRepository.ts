@@ -20,6 +20,9 @@ interface ICallbackAny{
 }
 //Instantiate DestinationList collection to represent whitelist.ini
 export function destinationListSetup(file,callback?:ICallbackB){
+	if(!callback){
+        callback = function(){}
+    };
 	var destinationList = mongoose.model("DestinationList");
 	File.getAllLinesAsTuple(file,function(err,whitelistAll:Array<[number, string]>){ //[[2, "hej"], [3, "då"], [5, "sometahing"]]
 		if(!err){
@@ -175,6 +178,9 @@ export function queuePop(queueId:number, callback?:ICallbackQ){
 }
 
 export function activeMsg(callback?: ICallbackData){
+	if(!callback){
+        callback = function(){}
+    };
 	var Msg = mongoose.model("Msg");	
 	Msg.find({
         isSorted: true,
@@ -191,6 +197,9 @@ export function activeMsg(callback?: ICallbackData){
 }
 
 export function activeQueues(callback?:ICallbackData){
+	if(!callback){
+        callback = function(){}
+    };
 	var QueueList = mongoose.model("QueueList");
 	QueueList.find({
         lengthOfQueue: { $gt: 0 }
@@ -206,6 +215,9 @@ export function activeQueues(callback?:ICallbackData){
 }
 
 export function listActive(callback?:ICallbackAny){
+	if(!callback){
+        callback = function(){}
+    };
 	var Msg = mongoose.model("Msg");
 	Msg.aggregate([
 		{$match:{'isSorted':true,'isSent':false}

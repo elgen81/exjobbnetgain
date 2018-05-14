@@ -42,6 +42,9 @@ export function fileToString(filename:string,callback?: ICallbackData){
 }
 
 export function exists(filename:string, callback?: ICallback){
+    if(!callback){
+        callback = function(){}
+    };
     var status = fs.existsSync(filename)
     if(status){
         callback(null, true)
@@ -82,6 +85,9 @@ export function appendLine(filename:string, data:string, callback?: ICallback){
 }
 
 export function fileExists(filename:string, callback?:ICallback){
+    if(!callback){
+        callback = function(){}
+    };
     fs.open(filename,'a+',function(err,file){
         if(err){
             logController(process.argv[1],"couldn't open "+filename,'error')
@@ -184,6 +190,9 @@ export function removeLine(filename:string, data:string,callback?:ICallback){
 }
 
 export function getLineAsTupleById(filename:string, data:number,callback?: ICallbackTuple){
+    if(!callback){
+        callback = function(){}
+    };
     var ndata = "#"+data
     let tuple: [number,string]
     exists(filename,function(err,status){
@@ -219,6 +228,9 @@ export function getLineAsTupleById(filename:string, data:number,callback?: ICall
 }
 
 export function getLineAsTupleByName(filename:string, data:string,callback?:ICallbackTuple){
+    if(!callback){
+        callback = function(){}
+    };
     let tuple: [number,string]
     exists(filename,function(err,status){
         if(status){
@@ -254,6 +266,9 @@ export function getLineAsTupleByName(filename:string, data:string,callback?:ICal
     })
 }
 export function getAllLinesAsTuple(filename,callback?:ICallbackTuple){
+    if(!callback){
+        callback = function(){}
+    };
     let tuple: Array<[number,string]>
     tuple = []
     exists(filename,function(err,status){
