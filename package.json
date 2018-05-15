@@ -40,7 +40,7 @@
   },
   "scripts": {
     "test": "nyc mocha",
-    "start": "electron ."
+    "start": "node ./dist/ESB.js"
   },
   "nyc": {
     "include": [

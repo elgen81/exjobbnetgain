@@ -15,7 +15,7 @@
             var data;
             function getLatestQueue(){
                 $.ajax({
-                    url: 'http://localhost:8000/menu/listActive',
+                    url: 'http://localhost:8080/menu/listActive',
                     type: 'GET',
                     success: function(data,textStatus,jqXHR){
                         CreateTableFromJSON(data);    

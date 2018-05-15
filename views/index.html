@@ -51,17 +51,37 @@
             });
         });
         function serverOff(){
-            $.ajax({
-                url : 'http://localhost:8000/menu/shutdown',
-                type : 'POST',
-                success : function(data,textStatus, jqXHR){
-                    document.getElementById("serverOff").style.color = "red";
-                    getdata(); 
-                },
-                error : function(jqXHR,textStatus, errorThrown){
-                    document.getElementById("serverOff").style.color = "red";
-                }
-            })                  
+            if(document.getElementById("serverOff").style.color == "green"){
+                $.ajax({
+                    url : 'http://localhost:8080/menu/inputServerOff',
+                    type : 'POST',
+                    success : function(data,textStatus, jqXHR){
+                        document.getElementById("serverOff").style.color = "red";
+                        getData(); 
+                    },
+                    error : function(jqXHR,textStatus, errorThrown){
+                        document.getElementById("serverOff").style.color = "red";
+                        getData();
+                    }
+                })    
+            }
+            else if(document.getElementById("serverOff").style.color == "red"){
+                $.ajax({
+                    url : 'http://localhost:8080/menu/inputServerOn',
+                    type : 'POST',
+                    success : function(data,textStatus, jqXHR){
+                        document.getElementById("serverOff").style.color = "green";
+                        getData();
+                    },
+                    error : function(jqXHR,textStatus, errorThrown){
+                        document.getElementById("serverOff").style.color = "green";
+                        getData();
+                    }
+                })  
+            }
+            else{
+                alert("wtf");
+            }              
         }
 
         function getData(){
@@ -71,32 +91,20 @@
             data.statusQ = "n/a";
 
             $.ajax({
-                url : 'http://localhost:8000/menu/servDbStatus',
+                url : 'http://localhost:8080/menu/servDbStatus',
                         type : 'GET',
                         data : data,
                         success : function(data,textStatus, jqXHR){
-                            switch(data.statusS){
-                                case "1":
-                                    document.getElementById("statusS").innerText = "Connected";
-                                    document.getElementById("statusS").style.color = "green";
-                                    document.getElementById("serverOff").style.color = "green";
-                                    break;
-                                case "2":
-                                    document.getElementById("statusS").innerText = "Connecting";
-                                    document.getElementById("statusS").style.color = "yellow";
-                                    document.getElementById("serverOff").style.color = "yellow";
-                                    break;
-                                case "3":
-                                    document.getElementById("statusS").innerText = "Disconnecting";
-                                    document.getElementById("statusS").style.color = "yellow";
-                                    document.getElementById("serverOff").style.color = "yellow";
-                                    break;
-                                default:
-                                    document.getElementById("statusS").innerText = "Error";
+                            if(data.statusS){
+                                document.getElementById("statusS").innerText = "Connected";
+                                document.getElementById("statusS").style.color = "green";
+                                document.getElementById("serverOff").style.color = "green";
+                            }
+                            else{
+                                    document.getElementById("statusS").innerText = "Not Conncted";
                                     document.getElementById("statusS").style.color = "red";
                                     document.getElementById("serverOff").style.color = "red";
-                                    break;    
-                            }
+                            }    
                             document.getElementById("statusQ").innerText = data.statusQ;
                             document.getElementById("statusQ").style.color = "green"
                             document.getElementById("statusP").innerText = data.statusP;

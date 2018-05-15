@@ -44,8 +44,9 @@ router.get('/whitelistini', function(req,res){
 })
 
 router.get('/servDbStatus', function(req,res){
-    req.body.statusS = mongoose.connection.readyState.toString();
-    if(req.body.statusS != '0'){
+    req.body.statusS = serverStatus();
+    var mongostatus = mongoose.connection.readyState.toString();
+    if(mongostatus != '0'){
         repo.activeQueues(function(err,activeQueues){
             if(err){
                 req.body.statusQ = "N/A";
@@ -127,20 +128,20 @@ router.post('/whitelist', function(req,res){
     }
 });
 
-router.post('/shutdown', function(req, res){
-    if(req.connection.remoteAddress == "1"){
+router.post('/inputServerOff', function(req, res){
+    if(req.connection.remoteAddress){
         eventEmitter.emit("exitInput")
         res.status(200).send("Input server shutting down")    
     }
     else{
-        console.log("Nemas Problemas")
         res.status(500).send("You are not supposeed to be here lurking")
     }
 })
 
-router.post('/startup', function(req, res){
-    if(req.connection.remoteAddress == "1"){
-        eventEmitter.emit("startInput")    
+router.post('/inputServerOn', function(req, res){
+    if(req.connection.remoteAddress){
+        eventEmitter.emit("startInput")
+        res.status(200).send("Input server starting")     
     }
     else{
         console.log("Nemas Problemas")
@@ -149,8 +150,9 @@ router.post('/startup', function(req, res){
 })
 
 router.post('/display', function(req, res){
-    if(req.connection.remoteAddress == "1"){
-        eventEmitter.emit("display")    
+    if(req.connection.remoteAddress){
+        eventEmitter.emit("display")
+        res.status(200).send("Opening window")    
     }
     else{
         console.log("Nemas Problemas")

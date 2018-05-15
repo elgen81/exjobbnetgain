@@ -17,15 +17,15 @@ var server = app.listen(port, function(err){
 		console.log("Express server listening on port " + port);
 	}
 });
-const shutdownManager = new GracefulShutdownManager(server)
+/*const shutdownManager = new GracefulShutdownManager(server)
 process.on('SIGTERM', () =>{
 	shutdownManager.terminate(() => {
 		logController(process.argv[1], 'Server is shutdown gracefully', "info")
 	})
-})
+})*/
 
 process.on("message", (msg) =>{
-	if(msg.msg == "exit")
+	if(msg == "exit")
 	{
 		connection.close(function(err:Error){
             if(err){

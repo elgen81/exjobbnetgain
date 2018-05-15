@@ -57,7 +57,7 @@ router.post('/', function(req, res){
 		}
 		else{
 			if(err) { res.status(500).send("There was a problem retriving the destination.") }
-			else { res.status(500).send("Unknown Destination.") }
+			else { res.status(400).send("Unknown Destination.") }
 		}
 	}).limit(1);
 });

@@ -25,9 +25,9 @@ export var eventEmitter = new events.EventEmitter();
 
 //Events for input server
   eventEmitter.on("startInput", ()=> {
-      console.log("in start, erver: " + serverProcess)
+      console.log("in start, server: " + serverProcess)
       if(serverProcess) 
-        { console.log("Input server aleready acrive") }
+        { console.log("Input server aleready active") }
       else{
         serverProcess = child_proc.fork("./dist/server.js", [])
 
@@ -43,7 +43,7 @@ export var eventEmitter = new events.EventEmitter();
         });
 
         serverProcess.on('message', (msg) =>{
-          if(msg.msg = "newOut")
+          if(msg == "newOut")
           {
             console.log(msg.id)
             eventEmitter.emit(msg.msg, msg.id)
@@ -55,7 +55,9 @@ export var eventEmitter = new events.EventEmitter();
 
   eventEmitter.on("exitInput", () =>{
     if(serverProcess)
-      {  serverProcess.send("exit") }
+      {
+        serverProcess.kill("SIGTERM") }
+        serverProcess = null;
   })
 
   
@@ -110,7 +112,7 @@ export var eventEmitter = new events.EventEmitter();
 
   eventEmitter.on("display", () =>{
     if(display) 
-      { console.log("Display aleready acrive") }
+      { console.log("Display already active") }
     else
       {
         display = child_proc.spawn('electron', ['.']);
@@ -125,8 +127,7 @@ export var eventEmitter = new events.EventEmitter();
   })
   
 
-  eventEmitter.emit("startInput");
-  eventEmitter.emit("display");
+  
 
 //Menuserver setup and controll
   const GracefulShutdownManager = require('@moebius/http-graceful-shutdown').GracefulShutdownManager
@@ -165,6 +166,8 @@ export var eventEmitter = new events.EventEmitter();
   import MenuController = require("./menuController")
   app.use("/menu", MenuController)
 
+  eventEmitter.emit("startInput");
+  eventEmitter.emit("display");
 
   export function serverStatus():boolean{
     
