@@ -5,8 +5,6 @@ import {logController} from './logger'
 import { config } from "./_config";
 import { connection } from "mongoose";
 
-const GracefulShutdownManager = require('@moebius/http-graceful-shutdown').GracefulShutdownManager
-
 var port:number = config.port || 3000;
 
 var server = app.listen(port, function(err){
@@ -17,12 +15,6 @@ var server = app.listen(port, function(err){
 		console.log("Express server listening on port " + port);
 	}
 });
-/*const shutdownManager = new GracefulShutdownManager(server)
-process.on('SIGTERM', () =>{
-	shutdownManager.terminate(() => {
-		logController(process.argv[1], 'Server is shutdown gracefully', "info")
-	})
-})*/
 
 process.on("message", (msg) =>{
 	if(msg == "exit")
